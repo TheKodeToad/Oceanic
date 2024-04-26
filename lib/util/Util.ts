@@ -408,7 +408,7 @@ export default class Util {
         }));
     }
 
-    formatAllowedMentions(allowed?: AllowedMentions): RawAllowedMentions {
+    formatAllowedMentions(allowed?: AllowedMentions | null): RawAllowedMentions {
         const result: RawAllowedMentions = { parse: [] };
 
         if (!allowed) {

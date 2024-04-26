@@ -141,7 +141,7 @@ export default class Webhooks {
             method: "PATCH",
             path:   Routes.WEBHOOK_MESSAGE(webhookID, token, messageID),
             json:   {
-                allowed_mentions: options.allowedMentions ? this.#manager.client.util.formatAllowedMentions(options.allowedMentions) : undefined,
+                allowed_mentions: this.#manager.client.util.formatAllowedMentions(options.allowedMentions),
                 attachments:      options.attachments,
                 components:       options.components ? this.#manager.client.util.componentsToRaw(options.components) : undefined,
                 content:          options.content,
