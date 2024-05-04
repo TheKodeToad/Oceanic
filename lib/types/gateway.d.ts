@@ -247,7 +247,24 @@ export interface Activity {
     type: ActivityTypes;
     url?: string | null;
 }
-export interface BotActivity extends Pick<Activity, "name" | "url" | "state" | "type"> {}
+
+export interface BotStreamingActivity {
+    name: string;
+    type: ActivityTypes.STREAMING;
+    url: string;
+}
+
+export interface BotCustomActivity {
+    name: string;
+    state: string;
+    type: ActivityTypes.CUSTOM;
+}
+export interface BotOtherActivity {
+    name: string;
+    type: ActivityTypes.GAME | ActivityTypes.LISTENING | ActivityTypes.WATCHING;
+}
+
+export type BotActivity  = BotStreamingActivity | BotCustomActivity | BotOtherActivity;
 
 export interface ActivityEmoji {
     animated?: boolean;
