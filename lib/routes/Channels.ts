@@ -489,7 +489,7 @@ export default class Channels {
             method: "PATCH",
             path:   Routes.CHANNEL_MESSAGE(channelID, messageID),
             json:   {
-                allowed_mentions: options.allowedMentions ? this._manager.client.util.formatAllowedMentions(options.allowedMentions) : undefined,
+                allowed_mentions: options.content === undefined ? undefined : this._manager.client.util.formatAllowedMentions(options.allowedMentions),
                 attachments:      options.attachments,
                 components:       options.components ? this._manager.client.util.componentsToRaw(options.components) : undefined,
                 content:          options.content,
