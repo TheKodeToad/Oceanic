@@ -216,9 +216,6 @@ export default class Channels {
      * @caching This method **does not** cache its result.
      */
     async createReaction(channelID: string, messageID: string, emoji: string): Promise<void> {
-        if (emoji === decodeURIComponent(emoji)) {
-            emoji = encodeURIComponent(emoji);
-        }
         await this._manager.authRequest<null>({
             method: "PUT",
             path:   Routes.CHANNEL_REACTION_USER(channelID, messageID, emoji, "@me")
@@ -370,9 +367,6 @@ export default class Channels {
      * @caching This method **does not** cache its result.
      */
     async deleteReaction(channelID: string, messageID: string, emoji: string, user = "@me"): Promise<void> {
-        if (emoji === decodeURIComponent(emoji)) {
-            emoji = encodeURIComponent(emoji);
-        }
         await this._manager.authRequest<null>({
             method: "DELETE",
             path:   Routes.CHANNEL_REACTION_USER(channelID, messageID, emoji, user)
@@ -387,9 +381,6 @@ export default class Channels {
      * @caching This method **does not** cache its result.
      */
     async deleteReactions(channelID: string, messageID: string, emoji?: string): Promise<void> {
-        if (emoji && emoji === decodeURIComponent(emoji)) {
-            emoji = encodeURIComponent(emoji);
-        }
         await this._manager.authRequest<null>({
             method: "DELETE",
             path:   emoji ? Routes.CHANNEL_REACTION(channelID, messageID, emoji) : Routes.CHANNEL_REACTIONS(channelID, messageID)
@@ -932,9 +923,6 @@ export default class Channels {
      * @caching This method **does not** cache its result.
      */
     async getReactions(channelID: string, messageID: string, emoji: string, options?: GetReactionsOptions): Promise<Array<User>> {
-        if (emoji === decodeURIComponent(emoji)) {
-            emoji = encodeURIComponent(emoji);
-        }
 
         const _getReactions = async (_options?: GetReactionsOptions): Promise<Array<User>> => {
             const query = new URLSearchParams();
