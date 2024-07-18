@@ -429,7 +429,7 @@ export default class Shard extends TypedEmitter<ShardEvents> {
                 this.client.emit(
                     "guildEmojisUpdate",
                     guild ?? { id: packet.d.guild_id },
-                    guild?.emojis?.toArray() ?? packet.d.emojis.map(emoji => this.client.util.convertEmoji(emoji)),
+                    guild?.emojis?.toArray() ?? packet.d.emojis.map(emoji => this.client.util.convertGuildEmoji(emoji)),
                     oldEmojis
                 );
                 break;
