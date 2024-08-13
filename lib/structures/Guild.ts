@@ -1311,6 +1311,14 @@ export default class Guild extends Base {
     }
 
     /**
+     * Get the voice state of a member.
+     * @param memberID The ID of the member. Use `@me` for the bot user.
+     */
+    async getVoiceState(memberID: string): Promise<VoiceState> {
+        return this.client.rest.guilds.getVoiceState(this.id, memberID);
+    }
+
+    /**
      * Get the webhooks in this guild.
      */
     async getWebhooks(): Promise<Array<Webhook>> {

@@ -82,7 +82,7 @@ import type {
     RawThreadMember
 } from "../types/channels";
 import Role from "../structures/Role";
-import type { VoiceRegion } from "../types/voice";
+import type { RawVoiceState, VoiceRegion } from "../types/voice";
 import Invite from "../structures/Invite";
 import Integration from "../structures/Integration";
 import AutoModerationRule from "../structures/AutoModerationRule";
@@ -92,6 +92,7 @@ import Guild from "../structures/Guild";
 import type Member from "../structures/Member";
 import type { Uncached } from "../types/shared";
 import ApplicationCommand from "../structures/ApplicationCommand";
+import VoiceState from "../structures/VoiceState";
 
 /** Various methods for interacting with guilds. Located at {@link Client#rest | Client#rest}{@link RESTManager#guilds | .guilds}. */
 export default class Guilds {
@@ -1652,6 +1653,20 @@ export default class Guilds {
             method: "GET",
             path:   Routes.GUILD_VOICE_REGIONS(guildID)
         });
+    }
+
+    /**
+     * Get the voice state of a member.
+     * @param guildID The ID of the guild.
+     * @param memberID The ID of the member. Use `@me` for the bot user.
+     * @caching This method **may** cache its result. The result will not be cached if the guild is not cached.
+     * @caches {@link Guild#voiceStates | Guild#voiceStates}
+     */
+    async getVoiceState(guildID: string, memberID: string): Promise<VoiceState> {
+        return this._manager.authRequest<RawVoiceState>({
+            method: "GET",
+            path:   Routes.GUILD_VOICE_STATE(guildID, memberID)
+        }).then(data => this._manager.client.guilds.get(guildID)?.voiceStates.update(data) ?? new VoiceState(data, this._manager.client));
     }
 
     /**
