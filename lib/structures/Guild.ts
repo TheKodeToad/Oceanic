@@ -1244,6 +1244,14 @@ export default class Guild extends Base {
     }
 
     /**
+     * Get a role in this guild. Only use this if you need to. See the `roles` collection.
+     * @param roleID The ID of the role to get.
+     */
+    async getRole(roleID: string): Promise<Role> {
+        return this.client.rest.guilds.getRole(this.id, roleID);
+    }
+
+    /**
      * Get the roles in this guild. Only use this if you need to. See the `roles` collection.
      */
     async getRoles(): Promise<Array<Role>> {

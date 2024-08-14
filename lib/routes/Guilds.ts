@@ -1499,6 +1499,21 @@ export default class Guilds {
     }
 
     /**
+     * Get a role in a guild.
+     * @param guildID The ID of the guild.
+     * @param roleID The ID of the role to get.
+     * @caching This method **may** cache its result. The result will not be cached if the guild is not cached.
+     * @caches {@link Guild#roles | Guild#roles}
+     */
+    async getRole(guildID: string, roleID: string): Promise<Role> {
+        const guild = this._manager.client.guilds.get(guildID);
+        return this._manager.authRequest<RawRole>({
+            method: "GET",
+            path:   Routes.GUILD_ROLE(guildID, roleID)
+        }).then(data => guild?.roles.update(data, guildID) ?? new Role(data, this._manager.client, guildID));
+    }
+
+    /**
      * Get the roles in a guild.
      * @param guildID The ID of the guild.
      * @caching This method **may** cache its result. The result will not be cached if the guild is not cached.
