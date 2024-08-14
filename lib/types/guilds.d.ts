@@ -34,10 +34,14 @@ import type {
     VideoQualityModes,
     SortOrderTypes,
     ForumLayoutTypes,
-    OnboardingModes
+    OnboardingModes,
+    MemberSearchSortType,
+    MemberJoinSourceType,
+    JSONErrorCodes
 } from "../Constants";
 import type User from "../structures/User";
 import type Integration from "../structures/Integration";
+import type Member from "../structures/Member";
 
 // channels, guild_scheduled_events, joined_at, large, member_count, members, presences,
 // stage_instances, threads, unavailable, voice_states - all gateway only
@@ -846,4 +850,125 @@ export interface BulkBanResponse {
     bannedUsers: Array<string>;
     /** The users that could not be banned. */
     failedUsers: Array<string>;
+}
+
+export interface MemberSearchOptions {
+    /** Get members after this member */
+    after?: MemberSearchPaginationFilter;
+    /** The filter criteria to match against members using AND logic */
+    andQuery?: MemberSearchFilter;
+    /** Get members before this member */
+    before?: MemberSearchPaginationFilter;
+    /** Max number of members to return (1-1000, default 25) */
+    limit?: number;
+    /** The filter criteria to match against members using OR logic */
+    orQuery?: MemberSearchFilter;
+    /** The {@link Constants~MemberSearchSortType | sorting algorithm to use} (default `JOINED_AT_DESC`) */
+    sort?: MemberSearchSortType;
+}
+
+export interface MemberSearchFilter {
+    /** Whether the member left and rejoined the guild */
+    didRejoin?: boolean;
+    /** When the user joined the guild */
+    guildJoinedAt?: MemberSearchRangeQuery<string>;
+    /** Whether the member has not yet passed the guild's member verification requirements */
+    isPending?: boolean;
+    /** How the user joined the guild */
+    joinSourceType?: MemberSearchOrQuery<MemberJoinSourceType>;
+    /** IDs of roles to match members against */
+    roleIDs?: MemberSearchAndOrQuery<string>;
+    /** Safety signals to match members against */
+    safetySignals?: MemberSearchSafetySignals;
+    /** The invite code or vanity used to join the guild */
+    sourceInviteCode?: MemberSearchOrQuery<string>;
+    /** Query to match member IDs against */
+    userID?: MemberSearchOrQueryRange<string>;
+    /** Query to match display name(s), username(s), and nickname(s) against */
+    usernames?: MemberSearchOrQuery<string>;
+}
+
+export interface MemberSearchSafetySignals {
+    /** Whether the member has been indefinitely quarantined by an AutoMod Rule for their username, display name, or nickname */
+    automodQuarantinedUsername?: boolean;
+    /** When the member's timeout will expire */
+    communicationDisabledUntil?: MemberSearchRangeQuery<number>;
+    /** Whether unusual account activity is detected */
+    unusualAccountActivity?: boolean;
+    /** When the member's unusual DM activity flag will expire */
+    unusualDmActivityUntil?: MemberSearchRangeQuery<number>;
+}
+
+export interface MemberSearchQuery<T> {
+    /** array of snowflakes, strings, or integers | The values to match against using AND logic (1-100 characters, max 10) */
+    andQuery?: Array<T>;
+    /** array of snowflakes, strings, or integers | The values to match against using OR logic (1-100 characters, max 10) */
+    orQuery?: Array<T>;
+    /** The range of values to match against */
+    range?: MemberSearchQueryRange<T>;
+}
+
+export interface MemberSearchOrQuery<T> extends Pick<MemberSearchQuery<T>, "orQuery"> {}
+export interface MemberSearchAndOrQuery<T> extends Pick<MemberSearchQuery<T>, "andQuery" | "orQuery"> {}
+export interface MemberSearchOrQueryRange<T> extends Pick<MemberSearchQuery<T>, "orQuery" | "range"> {}
+export interface MemberSearchRangeQuery<T> extends Pick<MemberSearchQuery<T>, "range"> {}
+
+export interface MemberSearchQueryRange<T> {
+    /** Inclusive lower bound value to match */
+    gte?: T;
+    /** | lte?  | snowflake or integer | Inclusive upper bound value to match | */
+    lte?: T;
+}
+
+export interface MemberSearchPaginationFilter {
+    /** When the user to paginate past joined the guild */
+    guildJoinedAt: number;
+    /** The ID of the user to paginate past */
+    userID: string;
+}
+
+export interface RawSupplementalGuildMember {
+    integration_type?: IntegrationType | null;
+    inviter_id: string | null;
+    join_source_type: MemberJoinSourceType;
+    member: RESTMember;
+    source_invite_code: string | null;
+}
+
+export interface SupplementalGuildMember {
+    /** The type of integration that added the user to the guild, if applicable */
+    integrationType?: IntegrationType | null;
+    /** The ID of the user who invited the user to the guild, if applicable */
+    inviterID: string | null;
+    /** How the user joined the guild */
+    joinSourceType: MemberJoinSourceType;
+    /** The associated guild member */
+    member: Member;
+    /** The invite code or vanity used to join the guild, if applicable */
+    sourceInviteCode: string | null;
+}
+
+export interface RawMemberSearchResults {
+    guild_id: string;
+    members: Array<RawSupplementalGuildMember>;
+    page_result_count: number;
+    total_result_count: number;
+}
+
+export interface MemberSearchResults {
+    /** The ID of the guild searched */
+    guildID: string;
+    /** The resulting members */
+    members: Array<SupplementalGuildMember>;
+    /** The number of results returned */
+    pageResultCount: number;
+    /** The total number of results found */
+    totalResultCount: number;
+}
+
+export interface MemberSearchNotIndexedResult {
+    code: JSONErrorCodes.INDEX_NOT_YET_AVAILABLE;
+    documents_indexed: number;
+    message: string;
+    retry_after: number;
 }

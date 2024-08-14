@@ -52,7 +52,17 @@ import type {
     RawIncidentActions,
     BulkBanOptions,
     BulkBanResponse,
-    RawBulkBanResponse
+    RawBulkBanResponse,
+    MemberSearchOptions,
+    MemberSearchRangeQuery,
+    MemberSearchOrQuery,
+    MemberSearchAndOrQuery,
+    MemberSearchOrQueryRange,
+    MemberSearchFilter,
+    MemberSearchPaginationFilter,
+    RawMemberSearchResults,
+    MemberSearchResults,
+    MemberSearchNotIndexedResult
 } from "../types/guilds";
 import * as Routes from "../util/Routes";
 import type { CreateAutoModerationRuleOptions, EditAutoModerationRuleOptions, RawAutoModerationRule } from "../types/auto-moderation";
@@ -93,6 +103,7 @@ import type Member from "../structures/Member";
 import type { Uncached } from "../types/shared";
 import ApplicationCommand from "../structures/ApplicationCommand";
 import VoiceState from "../structures/VoiceState";
+import { setTimeout } from "node:timers/promises";
 
 /** Various methods for interacting with guilds. Located at {@link Client#rest | Client#rest}{@link RESTManager#guilds | .guilds}. */
 export default class Guilds {
@@ -1763,6 +1774,98 @@ export default class Guilds {
     }
 
     /**
+     * Search a guild's members.
+     * @param guildID The ID of the guild.
+     * @param options The options to search with.
+     * @param retryOnIndexNotAvailable If the search should be retried if Discord replies with an index unavailable response. This will retry at most one time, waiting for `retry_after` or 15-45 seconds.
+     * @caching This method **may** cache its result. The result will not be cached if the guild is not cached.
+     * @caches {@link Guild#members | Guild#members}
+     */
+    async memberSearch(guildID: string, options?: MemberSearchOptions, retryOnIndexNotAvailable = true): Promise<MemberSearchResults> {
+        /* eslint-disable @typescript-eslint/explicit-function-return-type, unicorn/consistent-function-scoping */
+        const formatRange = <T>(data: MemberSearchRangeQuery<T>) => ({
+            range: data.range === undefined ? undefined : {
+                gte: data.range.gte,
+                lte: data.range.lte
+            }
+        });
+        const formatOrQuery = <T>(data: MemberSearchOrQuery<T>) => ({
+            or_query: data.orQuery
+        });
+        const formatOrQueryRange = <T>(data: MemberSearchOrQueryRange<T>) => ({
+            or_query: data.orQuery,
+            range:    data.range === undefined ? undefined : {
+                gte: data.range.gte,
+                lte: data.range.lte
+            }
+        });
+        const formatAndOrQuery = <T>(data: MemberSearchAndOrQuery<T>) => ({
+            and_query: data.andQuery,
+            or_query:  data.orQuery
+        });
+        const formatSearchFilter = (data: MemberSearchFilter) => ({
+            did_rejoin:       data.didRejoin,
+            guild_joined_at:  data.guildJoinedAt === undefined ? undefined : formatRange(data.guildJoinedAt),
+            is_pending:       data.isPending,
+            join_source_type: data.joinSourceType === undefined ? undefined : formatOrQuery(data.joinSourceType),
+            role_ids:         data.roleIDs === undefined ? undefined : formatAndOrQuery(data.roleIDs),
+            safety_signals:   data.safetySignals === undefined ? undefined : {
+                automod_quarantined_username: data.safetySignals.automodQuarantinedUsername,
+                communication_disabled_until: data.safetySignals.communicationDisabledUntil === undefined ? undefined : formatRange(data.safetySignals.communicationDisabledUntil),
+                unusual_account_activity:     data.safetySignals.unusualAccountActivity,
+                unusual_dm_activity_until:    data.safetySignals.unusualDmActivityUntil === undefined ? undefined : formatRange(data.safetySignals.unusualDmActivityUntil)
+            },
+            source_invite_code: data.sourceInviteCode === undefined ? undefined : formatOrQuery(data.sourceInviteCode),
+            user_id:            data.userID === undefined ? undefined : formatOrQueryRange(data.userID),
+            usernames:          data.usernames === undefined ? undefined : formatOrQuery(data.usernames)
+        });
+        const formatPaginationFilter = (data: MemberSearchPaginationFilter) => ({
+            guild_joined_at: data.guildJoinedAt,
+            user_id:         data.userID
+        });
+        /* eslint-enable @typescript-eslint/explicit-function-return-type, unicorn/consistent-function-scoping */
+        return this._manager.authRequest<RawMemberSearchResults | MemberSearchNotIndexedResult>({
+            method: "POST",
+            path:   Routes.GUILD_MEMBERS_SEARCH(guildID),
+            json:   {
+                after:     options?.after === undefined ? undefined : formatPaginationFilter(options.after),
+                and_query: options?.andQuery === undefined ? undefined : formatSearchFilter(options.andQuery),
+                before:    options?.before === undefined ? undefined : formatPaginationFilter(options.before),
+                limit:     options?.limit,
+                or_query:  options?.orQuery === undefined ? undefined : formatSearchFilter(options.orQuery),
+                sort:      options?.sort
+            }
+        }).then(async data => {
+            if ("retry_after" in data) {
+                if (!retryOnIndexNotAvailable) {
+                    throw new Error(`Member search for guild ${guildID} failed due to the index not being available.`);
+                }
+
+                let retryAfter = data.retry_after;
+                if (retryAfter === 0) {
+                    retryAfter = Math.floor(Math.random() * 30) + 15;
+                }
+                this._manager.client.emit("debug", `Retrying member search for ${guildID} in ${retryAfter} seconds...`);
+                await setTimeout(retryAfter * 1000);
+                return this.memberSearch(guildID, options, false);
+            }
+
+            return {
+                guildID: data.guild_id,
+                members: data.members.map(m => ({
+                    integrationType:  m.integration_type,
+                    inviterID:        m.inviter_id,
+                    joinSourceType:   m.join_source_type,
+                    member:           this._manager.client.util.updateMember(guildID, m.member.user.id, m.member),
+                    sourceInviteCode: m.source_invite_code
+                })),
+                pageResultCount:  data.page_result_count,
+                totalResultCount: data.total_result_count
+            };
+        });
+    }
+
+    /**
      * Remove a ban.
      * @param guildID The ID of the guild.
      * @param userID The ID of the user to remove the ban from.
@@ -1809,7 +1912,7 @@ export default class Guilds {
     }
 
     /**
-     * Search the username & nicknames of members in a guild.
+     * Search the username & nicknames of members in a guild. See {@link REST/Guilds#memberSearch | memberSearch} for a more detailed search.
      * @param guildID The ID of the guild.
      * @param options The options to search with.
      * @caching This method **may** cache its result. The result will not be cached if the guild is not cached.

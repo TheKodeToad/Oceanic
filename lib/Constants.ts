@@ -1473,6 +1473,24 @@ export enum RoleFlags {
     IN_PROMPT = 1 << 0,
 }
 
+export enum MemberSearchSortType {
+    JOINED_AT_DESC  = 1,
+    JOINED_AT_ASC   = 2,
+    USER_ID_DESC    = 3,
+    USER_ID_ASC     = 1,
+}
+
+export enum MemberJoinSourceType {
+    UNSPECIFIED                = 0,
+    BOT                        = 1,
+    INTEGRATION                = 2,
+    DISCOVERY                  = 3,
+    HUB                        = 4,
+    INVITE                     = 5,
+    VANITY_URL                 = 6,
+    MANUAL_MEMBER_VERIFICATION = 7,
+}
+
 // entries are intentionally not aligned
 /** The error codes that can be received. See [Discord's Documentation](https://discord.com/developers/docs/topics/opcodes-and-status-codes#json). */
 export enum JSONErrorCodes {
@@ -1704,6 +1722,7 @@ export enum JSONErrorCodes {
     INVALID_GIFT_REDEMPTION_INVOICE_OPEN = 100_024,
     INELIGIBLE_FOR_SUBSCRIPTION = 100_053,
     BILLING_NON_REFUNDABLE_PAYMENT_SOURCE = 100_060,
+    INDEX_NOT_YET_AVAILABLE = 110_000,
     APPLICATION_NOT_AVAILABLE = 110_001,
     LISTING_ALREADY_JOINED = 120_000,
     LISTING_TOO_MANY_MEMBERS = 120_001,

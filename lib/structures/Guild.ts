@@ -102,7 +102,9 @@ import type {
     EditIncidentActionsOptions,
     IncidentActions,
     BulkBanOptions,
-    BulkBanResponse
+    BulkBanResponse,
+    MemberSearchOptions,
+    MemberSearchResults
 } from "../types/guilds";
 import type {
     CreateScheduledEventOptions,
@@ -1396,6 +1398,16 @@ export default class Guild extends Base {
         return this.client.leaveVoiceChannel(this.id);
     }
 
+
+    /**
+     * Search this guild's members.
+     * @param options The options to search with.
+     * @param retryOnIndexNotAvailable If the search should be retried if Discord replies with an index unavailable response. This will retry at most one time, waiting for `retry_after` or 15-45 seconds.
+     */
+    async memberSearch(options?: MemberSearchOptions, retryOnIndexNotAvailable = true): Promise<MemberSearchResults> {
+        return this.client.rest.guilds.memberSearch(this.id, options, retryOnIndexNotAvailable);
+    }
+
     /**
      * Get the permissions of a member. If providing an id, the member must be cached.
      * @param member The member to get the permissions of.
@@ -1459,7 +1471,7 @@ export default class Guild extends Base {
     }
 
     /**
-     * Search the username & nicknames of members in this guild.
+     * Search the username & nicknames of members in this guild. See {@link Guild#memberSearch | memberSearch} for a more detailed search.
      * @param options The options for the search.
      */
     async searchMembers(options: SearchMembersOptions): Promise<Array<Member>> {

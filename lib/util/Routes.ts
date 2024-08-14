@@ -47,6 +47,7 @@ export const GUILD_ACTIVE_THREADS        = (guildID: string) => encode`/guilds/$
 export const GUILD_MEMBERS               = (guildID: string) => encode`/guilds/${guildID}/members`;
 export const GUILD_MEMBER                = (guildID: string, userID: string) => encode`/guilds/${guildID}/members/${userID}`;
 export const GUILD_SEARCH_MEMBERS        = (guildID: string) => encode`/guilds/${guildID}/members/search`;
+export const GUILD_MEMBERS_SEARCH        = (guildID: string) => encode`/guilds/${guildID}/members-search`;
 export const GUILD_MEMBER_ROLE           = (guildID: string, userID: string, roleID: string) => encode`/guilds/${guildID}/members/${userID}/roles/${roleID}`;
 export const GUILD_ROLES                 = (guildID: string) => encode`/guilds/${guildID}/roles`;
 export const GUILD_ROLE                  = (guildID: string, roleID: string) => encode`/guilds/${guildID}/roles/${roleID}`;
