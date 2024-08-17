@@ -253,7 +253,7 @@ export interface EditGuildChannelOptions {
 }
 
 export interface EditChannelOptions extends EditGroupDMOptions, EditGuildChannelOptions {}
-export interface EditAnyGuildChannelOptions extends Pick<EditGuildChannelOptions, "name" | "position" | "permissionOverwrites"> {}
+export interface EditAnyGuildChannelOptions extends Pick<EditGuildChannelOptions, "name" | "position" | "permissionOverwrites" | "reason"> {}
 export interface EditTextChannelOptions extends EditAnyGuildChannelOptions, Pick<EditGuildChannelOptions, "topic" | "nsfw" | "rateLimitPerUser" | "parentID" | "defaultAutoArchiveDuration"> { type?: ChannelTypes.GUILD_ANNOUNCEMENT; }
 export interface EditAnnouncementChannelOptions extends Omit<EditTextChannelOptions, "rateLimitPerUser" | "type"> { type?: ChannelTypes.GUILD_TEXT; }
 export interface EditVoiceChannelOptions extends EditAnyGuildChannelOptions, Pick<EditGuildChannelOptions, "nsfw" | "bitrate" | "userLimit" | "parentID" | "rtcRegion" | "videoQualityMode"> {}
