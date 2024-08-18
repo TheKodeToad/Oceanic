@@ -7,6 +7,7 @@ import { API_URL, RESTMethods, USER_AGENT, type RESTMethod } from "../Constants"
 import Base from "../structures/Base";
 import type { LatencyRef, RequestHandlerInstanceOptions, RequestOptions } from "../types/request-handler";
 import type { RESTOptions } from "../types/client";
+import { RateLimitedError } from "../util/Errors";
 
 /**
  * Latency & ratelimit related things lovingly borrowed from eris
@@ -33,6 +34,7 @@ export default class RequestHandler {
             followRedirects:            !!options.followRedirects,
             host:                       options.host ?? (options.baseURL ? new URL(options.baseURL).host : new URL(API_URL).host),
             latencyThreshold:           options.latencyThreshold ?? 30000,
+            maxRatelimitRetryWindow:    options.maxRatelimitRetryWindow ?? Infinity,
             ratelimiterOffset:          options.ratelimiterOffset ?? 0,
             requestTimeout:             options.requestTimeout ?? 15000,
             superProperties:            options.superProperties ?? null,
@@ -262,6 +264,9 @@ export default class RequestHandler {
 
                             this._manager.client.emit("debug", `${res.headers.has("x-ratelimit-global") ? "Global" : "Unexpected"} RateLimit: ${JSON.stringify(resBody)}\n${now} ${route} ${res.status}: ${latency}ms (${this.latencyRef.latency}ms avg) | ${this.ratelimits[route].remaining}/${this.ratelimits[route].limit} left | Reset ${delay} (${this.ratelimits[route].reset - now}ms left) | Scope ${res.headers.get("x-ratelimit-scope")!}`);
                             if (delay) {
+                                if (delay > this.options.maxRatelimitRetryWindow) {
+                                    throw new RateLimitedError(`Ratelimit on "${options.method} ${route}" exceeds the maximum retry window (${delay} > ${this.options.maxRatelimitRetryWindow})`);
+                                }
                                 setTimeout(() => {
                                     cb();
                                     // eslint-disable-next-line prefer-rest-params, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, prefer-spread

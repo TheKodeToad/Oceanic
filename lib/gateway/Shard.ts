@@ -21,7 +21,7 @@ import type { RawGuild } from "../types/guilds";
 import ExtendedUser from "../structures/ExtendedUser";
 import type Guild from "../structures/Guild";
 import type { ShardEvents } from "../types/events";
-import GatewayError, { DependencyError } from "../util/Errors";
+import { GatewayError, DependencyError } from "../util/Errors";
 import ClientApplication from "../structures/ClientApplication";
 import WebSocket, { type Data } from "ws";
 import { randomBytes } from "node:crypto";

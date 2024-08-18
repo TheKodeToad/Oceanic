@@ -47,11 +47,18 @@ export class DependencyError extends Error {
 
 
 /** A gateway error. */
-export default class GatewayError extends Error {
+export class GatewayError extends Error {
     code: number;
     override name = "GatewayError";
     constructor(message: string, code: number) {
         super(message);
         this.code = code;
+    }
+}
+
+export class RateLimitedError extends Error {
+    override name = "RateLimitedError";
+    constructor(message: string) {
+        super(message);
     }
 }

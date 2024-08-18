@@ -78,6 +78,12 @@ export interface RESTOptions {
      */
     latencyThreshold?: number;
     /**
+     * In milliseconds, the maximum ratelimit delay (in seconds) the lib will internally wait for to retry the request. If a ratelimit resets after this window, an error will be thrown instead.
+     * @note This currently defaults to Infinity for backwards compatibility, but this will be changed in 1.12.0.
+     * @defaultValue Infinity
+     */
+    maxRatelimitRetryWindow?: number;
+    /**
      * In milliseconds, the time to offset ratelimit calculations by.
      * @defaultValue 0
      */

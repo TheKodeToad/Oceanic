@@ -1,6 +1,6 @@
 import Compression from "./base";
 import type Shard from "../Shard";
-import GatewayError from "../../util/Errors";
+import { GatewayError } from "../../util/Errors";
 import { Inflate, constants } from "pako";
 
 interface PakoExtra {
