@@ -57,8 +57,10 @@ export class GatewayError extends Error {
 }
 
 export class RateLimitedError extends Error {
+    delay: number;
     override name = "RateLimitedError";
-    constructor(message: string) {
+    constructor(message: string, delay: number) {
         super(message);
+        this.delay = delay;
     }
 }

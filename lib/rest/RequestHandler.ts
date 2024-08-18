@@ -267,7 +267,7 @@ export default class RequestHandler {
                             if (delay) {
                                 if (delay > this.options.maxRatelimitRetryWindow) {
                                     cb();
-                                    return reject(new RateLimitedError(`Ratelimit on "${options.method} ${route}" exceeds the maximum retry window (${delay} > ${this.options.maxRatelimitRetryWindow})`));
+                                    return reject(new RateLimitedError(`Ratelimit on "${options.method} ${route}" exceeds the maximum retry window (${delay} > ${this.options.maxRatelimitRetryWindow})`, delay));
                                 }
                                 setTimeout(() => {
                                     cb();
