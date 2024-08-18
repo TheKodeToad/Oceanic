@@ -23,6 +23,8 @@ import type { IntegrationTypesConfig, RESTApplication } from "../types";
 export default class Application extends ClientApplication {
     /** The approximate number of guilds the application is in. */
     approximateGuildCount: number;
+    /** The approximate number of users this application has been installed by. */
+    approximateUserInstallCount: number;
     /** If the bot can be invited by anyone. */
     botPublic?: boolean;
     /** If authorizing the bot requires a code grant. */
@@ -99,6 +101,7 @@ export default class Application extends ClientApplication {
     constructor(data: RESTApplication, client: Client) {
         super(data, client);
         this.approximateGuildCount = data.approximate_guild_count ?? 0;
+        this.approximateUserInstallCount = data.approximate_user_install_count ?? 0;
         this.botPublic = data.bot_public;
         this.botRequireCodeGrant  = data.bot_require_code_grant;
         this.coverImage = data.cover_image ?? null;

@@ -26,6 +26,7 @@ import type User from "../structures/User";
 
 export interface RawApplication {
     approximate_guild_count?: number;
+    approximate_user_install_count?: number;
     bot_public?: boolean;
     bot_require_code_grant?: boolean;
     cover_image?: string;
