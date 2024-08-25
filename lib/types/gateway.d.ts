@@ -280,7 +280,7 @@ export interface BotCustomActivity {
 }
 export interface BotOtherActivity {
     name: string;
-    type: ActivityTypes.GAME | ActivityTypes.LISTENING | ActivityTypes.WATCHING;
+    type: ActivityTypes.GAME | ActivityTypes.LISTENING | ActivityTypes.WATCHING | ActivityTypes.COMPETING;
 }
 
 export type BotActivity  = BotStreamingActivity | BotCustomActivity | BotOtherActivity;
