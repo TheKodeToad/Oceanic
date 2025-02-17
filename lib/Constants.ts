@@ -472,6 +472,7 @@ export enum ConnectionVisibilityTypes {
 
 export const ConnectionServices = [
     "battlenet",
+    "bluesky",
     "crunchyroll",
     "domain",
     "ebay",
@@ -480,6 +481,7 @@ export const ConnectionServices = [
     "github",
     "instagram",
     "leagueoflegends",
+    "mastodon",
     "paypal",
     "playstation",
     "reddit",
