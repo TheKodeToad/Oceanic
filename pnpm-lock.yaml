@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   typedoc-plugin-merge-modules@5.1.0:
-    hash: gocpkc2skry6n6ryqxlqgguhya
+    hash: kchp7svfr2xwhkq4um5bd4bive
     path: patches/typedoc-plugin-merge-modules@5.1.0.patch
 
 importers:
@@ -91,8 +91,8 @@ importers:
         specifier: ^3.3.8
         version: 3.3.8(typedoc@0.25.13(typescript@5.4.5))
       typedoc-plugin-merge-modules:
-        specifier: ^5.1.0
-        version: 5.1.0(patch_hash=gocpkc2skry6n6ryqxlqgguhya)(typedoc@0.25.13(typescript@5.4.5))
+        specifier: 5.1.0
+        version: 5.1.0(patch_hash=kchp7svfr2xwhkq4um5bd4bive)(typedoc@0.25.13(typescript@5.4.5))
       typescript:
         specifier: ~5.4.5
         version: 5.4.5
@@ -3368,7 +3368,7 @@ snapshots:
     dependencies:
       typedoc: 0.25.13(typescript@5.4.5)
 
-  typedoc-plugin-merge-modules@5.1.0(patch_hash=gocpkc2skry6n6ryqxlqgguhya)(typedoc@0.25.13(typescript@5.4.5)):
+  typedoc-plugin-merge-modules@5.1.0(patch_hash=kchp7svfr2xwhkq4um5bd4bive)(typedoc@0.25.13(typescript@5.4.5)):
     dependencies:
       typedoc: 0.25.13(typescript@5.4.5)
 

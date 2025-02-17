@@ -2,6 +2,7 @@
   "name": "oceanic.js",
   "version": "1.11.2",
   "description": "A NodeJS library for interfacing with Discord.",
+  "packageManager": "pnpm@9.6.0",
   "main": "./dist/lib/index.js",
   "types": "./dist/lib/index.d.ts",
   "module": "./esm.mjs",
@@ -64,7 +65,7 @@
     "typedoc": "~0.25.13",
     "typedoc-plugin-extras": "~3.0.0",
     "typedoc-plugin-mdn-links": "^3.3.8",
-    "typedoc-plugin-merge-modules": "^5.1.0",
+    "typedoc-plugin-merge-modules": "5.1.0",
     "typescript": "~5.4.5",
     "undici-types": "^5.28.4",
     "zlib-sync": "^0.1.9"
