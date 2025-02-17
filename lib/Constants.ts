@@ -1088,9 +1088,10 @@ export enum AuditLogActionTypes {
 }
 
 export enum ApplicationCommandTypes {
-    CHAT_INPUT = 1,
-    USER       = 2,
-    MESSAGE    = 3,
+    CHAT_INPUT          = 1,
+    USER                = 2,
+    MESSAGE             = 3,
+    PRIMARY_ENTRY_POINT = 4,
 }
 
 export enum ApplicationCommandOptionTypes {
@@ -1123,6 +1124,12 @@ export enum InteractionResponseTypes {
     MODAL                                   = 9,
     /** @deprecated */
     PREMIUM_REQUIRED                        = 10,
+    LAUNCH_ACTIVITY                         = 12,
+}
+
+export enum EntryPointCommandHandlerTypes {
+    APP_HANDLER             = 1,
+    DISCORD_LAUNCH_ACTIVITY = 2,
 }
 
 export enum Intents {

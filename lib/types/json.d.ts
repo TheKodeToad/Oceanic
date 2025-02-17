@@ -84,7 +84,8 @@ import type {
     ApplicationMonetizationState,
     RPCApplicationState,
     StoreApplicationState,
-    ApplicationVerificationState
+    ApplicationVerificationState,
+    EntryPointCommandHandlerTypes
 } from "../Constants";
 
 export interface JSONAnnouncementChannel extends JSONThreadableChannel {
@@ -143,6 +144,7 @@ export interface JSONApplicationCommand extends JSONBase {
     descriptionLocalizations?: LocaleMap | null;
     dmPermission?: boolean;
     guildID?: string;
+    handler?: EntryPointCommandHandlerTypes;
     integrationTypes: Array<ApplicationIntegrationTypes>;
     name: string;
     nameLocalizations?: LocaleMap | null;

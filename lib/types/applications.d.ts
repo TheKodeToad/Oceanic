@@ -13,6 +13,7 @@ import type {
     ApplicationVerificationState,
     EntitlementOwnerTypes,
     EntitlementTypes,
+    EntryPointCommandHandlerTypes,
     InteractionContextTypes,
     RPCApplicationState,
     SKUAccessTypes,
@@ -120,6 +121,7 @@ export interface RawApplicationCommand {
     description_localized?: string;
     dm_permission?: boolean;
     guild_id?: string;
+    handler?: EntryPointCommandHandlerTypes;
     id: string;
     integration_types: Array<ApplicationIntegrationTypes>;
     name: string;
@@ -173,19 +175,21 @@ export interface RawApplicationCommandOptionChoice {
     value: string | number;
 }
 
-export type AnyApplicationCommand = ChatInputApplicationCommand | UserApplicationCommand | MessageApplicationCommand;
+export type AnyApplicationCommand = ChatInputApplicationCommand | UserApplicationCommand | MessageApplicationCommand | PrimaryEntryPointApplicationCommand;
 export type ApplicationCommandOptions = ApplicationCommandOptionsWithOptions | ApplicationCommandOptionsWithValue;
 export type ApplicationCommandOptionsWithOptions = ApplicationCommandOptionsSubCommand | ApplicationCommandOptionsSubCommandGroup;
 export type ApplicationCommandOptionsWithValue = ApplicationCommandOptionsString | ApplicationCommandOptionsInteger | ApplicationCommandOptionsBoolean | ApplicationCommandOptionsUser | ApplicationCommandOptionsChannel | ApplicationCommandOptionsRole | ApplicationCommandOptionsMentionable | ApplicationCommandOptionsNumber | ApplicationCommandOptionsAttachment;
 export type ChatInputApplicationCommand = ApplicationCommand<ApplicationCommandTypes.CHAT_INPUT>;
 export type UserApplicationCommand = ApplicationCommand<ApplicationCommandTypes.USER>;
 export type MessageApplicationCommand = ApplicationCommand<ApplicationCommandTypes.MESSAGE>;
+export type PrimaryEntryPointApplicationCommand = ApplicationCommand<ApplicationCommandTypes.PRIMARY_ENTRY_POINT>;
 
 export type ApplicationCommandOptionConversion<T extends EditApplicationCommandOptions | CreateApplicationCommandOptions> =
     T extends EditChatInputApplicationCommandOptions | CreateChatInputApplicationCommandOptions ? ChatInputApplicationCommand :
         T extends EditUserApplicationCommandOptions | CreateUserApplicationCommandOptions ? UserApplicationCommand :
             T extends EditMessageApplicationCommandOptions | CreateMessageApplicationCommandOptions ? MessageApplicationCommand :
-                never;
+                T extends EditPrimaryEntryPointApplicationCommandOptions | CreatePrimaryEntryPointApplicationCommandOptions ? PrimaryEntryPointApplicationCommand :
+                    never;
 
 
 export interface ApplicationCommandOptionBase<T extends ApplicationCommandOptionTypes = ApplicationCommandOptionTypes> {
@@ -278,7 +282,7 @@ export interface CreateApplicationCommandOptionsBase<T extends ApplicationComman
     type: T;
 }
 
-export type CreateApplicationCommandOptions = CreateChatInputApplicationCommandOptions | CreateUserApplicationCommandOptions | CreateMessageApplicationCommandOptions;
+export type CreateApplicationCommandOptions = CreateChatInputApplicationCommandOptions | CreateUserApplicationCommandOptions | CreateMessageApplicationCommandOptions | CreatePrimaryEntryPointApplicationCommandOptions;
 export interface CreateGuildChatInputApplicationCommandOptions extends Omit<CreateChatInputApplicationCommandOptions, "dmPermission" | "integrationTypes" | "contexts"> {}
 export interface CreateGuildUserApplicationCommandOptions extends Omit<CreateUserApplicationCommandOptions, "dmPermission" | "integrationTypes" | "contexts"> {}
 export interface CreateGuildMessageApplicationCommandOptions extends Omit<CreateMessageApplicationCommandOptions, "dmPermission" | "integrationTypes" | "contexts"> {}
@@ -292,13 +296,17 @@ export interface CreateChatInputApplicationCommandOptions extends CreateApplicat
     options?: Array<ApplicationCommandOptions>;
 }
 
-export type CreateUserApplicationCommandOptions = CreateApplicationCommandOptionsBase<ApplicationCommandTypes.USER>;
-export type CreateMessageApplicationCommandOptions = CreateApplicationCommandOptionsBase<ApplicationCommandTypes.MESSAGE>;
+export interface CreateUserApplicationCommandOptions extends CreateApplicationCommandOptionsBase<ApplicationCommandTypes.USER> {}
+export interface CreateMessageApplicationCommandOptions extends CreateApplicationCommandOptionsBase<ApplicationCommandTypes.MESSAGE> {}
+export interface CreatePrimaryEntryPointApplicationCommandOptions extends CreateApplicationCommandOptionsBase<ApplicationCommandTypes.PRIMARY_ENTRY_POINT> {
+    handler: EntryPointCommandHandlerTypes;
+}
 
-export type EditApplicationCommandOptions = EditChatInputApplicationCommandOptions | EditUserApplicationCommandOptions | EditMessageApplicationCommandOptions;
+export type EditApplicationCommandOptions = EditChatInputApplicationCommandOptions | EditUserApplicationCommandOptions | EditMessageApplicationCommandOptions | EditPrimaryEntryPointApplicationCommandOptions;
 export interface EditChatInputApplicationCommandOptions extends Partial<Omit<CreateChatInputApplicationCommandOptions, "type">> {}
 export interface EditUserApplicationCommandOptions extends Partial<Omit<CreateUserApplicationCommandOptions, "type">> {}
 export interface EditMessageApplicationCommandOptions extends Partial<Omit<CreateMessageApplicationCommandOptions, "type">> {}
+export interface EditPrimaryEntryPointApplicationCommandOptions extends Partial<Omit<CreatePrimaryEntryPointApplicationCommandOptions, "type">> {}
 
 export type EditGuildApplicationCommandOptions = EditGuildChatInputApplicationCommandOptions | EditGuildUserApplicationCommandOptions | EditGuildMessageApplicationCommandOptions;
 export interface EditGuildChatInputApplicationCommandOptions extends Partial<Omit<CreateChatInputApplicationCommandOptions, "type" | "dmPermission" | "integrationTypes" | "contexts">> {}

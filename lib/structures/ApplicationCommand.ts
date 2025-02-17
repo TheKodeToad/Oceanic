@@ -4,7 +4,7 @@ import Permission from "./Permission";
 import type Guild from "./Guild";
 import type ClientApplication from "./ClientApplication";
 import type Client from "../Client";
-import { ApplicationCommandTypes, type InteractionContextTypes, type ApplicationIntegrationTypes } from "../Constants";
+import { ApplicationCommandTypes, type InteractionContextTypes, type ApplicationIntegrationTypes, type EntryPointCommandHandlerTypes } from "../Constants";
 import type {
     ApplicationCommandOptionConversion,
     ApplicationCommandOptions,
@@ -38,6 +38,8 @@ export default class ApplicationCommand<T extends ApplicationCommandTypes = Appl
     dmPermission?: boolean;
     /** The id of the guild this command is in (guild commands only). */
     guildID: string | null;
+    /** The handler of this command. Only valid for `PRIMARY_ENTRY_POINT` commands. */
+    handler?: EntryPointCommandHandlerTypes;
     /** The installation contexts in which this command is available. */
     integrationTypes: Array<ApplicationIntegrationTypes>;
     /** The name of this command. */
@@ -65,6 +67,7 @@ export default class ApplicationCommand<T extends ApplicationCommandTypes = Appl
         this.descriptionLocalized = data.description_localized;
         this.dmPermission = data.dm_permission;
         this.guildID = data.guild_id ?? null;
+        this.handler = data.handler;
         this.integrationTypes = data.integration_types;
         this.name = data.name;
         this.nameLocalizations = data.name_localizations;
@@ -147,6 +150,7 @@ export default class ApplicationCommand<T extends ApplicationCommandTypes = Appl
             descriptionLocalizations: this.descriptionLocalizations,
             dmPermission:             this.dmPermission,
             guildID:                  this.guildID ?? undefined,
+            handler:                  this.handler,
             integrationTypes:         this.integrationTypes,
             name:                     this.name,
             nameLocalizations:        this.nameLocalizations,

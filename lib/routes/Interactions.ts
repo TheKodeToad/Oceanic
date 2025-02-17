@@ -36,7 +36,9 @@ export default class Interactions {
     async createInteractionResponse(interactionID: string, interactionToken: string, options: InteractionResponse): Promise<void> {
         let data: unknown;
         switch (options.type) {
-            case InteractionResponseTypes.PONG: {
+            case InteractionResponseTypes.PONG:
+            case InteractionResponseTypes.PREMIUM_REQUIRED:
+            case InteractionResponseTypes.LAUNCH_ACTIVITY: {
                 break;
             }
             case InteractionResponseTypes.CHANNEL_MESSAGE_WITH_SOURCE:

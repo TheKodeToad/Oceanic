@@ -49,7 +49,7 @@ export interface InteractionContent extends Pick<ExecuteWebhookOptions, "tts" | 
 export interface EditInteractionContent extends Pick<EditWebhookMessageOptions, "content" | "embeds" | "allowedMentions" | "components" | "attachments" | "files"> {}
 export interface InitialInteractionContent extends Omit<InteractionContent, "attachments" | "files"> {}
 
-export type InteractionResponse = PingInteractionResponse | MessageInteractionResponse | DeferredInteractionResponse | AutocompleteInteractionResponse | ModalSubmitInteractionResponse | PremiumRequiredResponse;
+export type InteractionResponse = PingInteractionResponse | MessageInteractionResponse | DeferredInteractionResponse | AutocompleteInteractionResponse | ModalSubmitInteractionResponse | PremiumRequiredResponse | LaunchActivityResponse;
 export interface PingInteractionResponse {
     type: InteractionResponseTypes.PONG;
 }
@@ -79,8 +79,11 @@ export interface ModalSubmitInteractionResponse {
 }
 
 export interface PremiumRequiredResponse {
-    data: Record<string, never>;
     type: InteractionResponseTypes.PREMIUM_REQUIRED;
+}
+
+export interface LaunchActivityResponse {
+    type: InteractionResponseTypes.LAUNCH_ACTIVITY;
 }
 
 

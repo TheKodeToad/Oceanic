@@ -290,9 +290,26 @@ export default class CommandInteraction<T extends AnyInteractionChannel | Uncach
         return this.data.type === ApplicationCommandTypes.MESSAGE;
     }
 
+    /** A type guard, checking if this command interaction is a {@link Constants~ApplicationCommandTypes.PRIMARY_ENTRY_POINT | Primary Entry Point} command. */
+    isPrimaryEntryPointCommand(): this is CommandInteraction<T, ApplicationCommandTypes.PRIMARY_ENTRY_POINT> {
+        return this.data.type === ApplicationCommandTypes.PRIMARY_ENTRY_POINT;
+    }
+
     /** A type guard, checking if this command interaction is a {@link Constants~ApplicationCommandTypes.USER | User} command. */
     isUserCommand(): this is CommandInteraction<T, ApplicationCommandTypes.USER> {
         return this.data.type === ApplicationCommandTypes.USER;
+    }
+
+    /**
+     * Launch the bot's activity. This is an initial response, and more than one initial response cannot be used.
+     */
+    async launchActivity(): Promise<void> {
+        if (this.acknowledged) {
+            throw new TypeError("Interactions cannot have more than one initial response.");
+        }
+
+        this.acknowledged = true;
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.LAUNCH_ACTIVITY });
     }
 
     /**
@@ -305,7 +322,7 @@ export default class CommandInteraction<T extends AnyInteractionChannel | Uncach
         }
 
         this.acknowledged = true;
-        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.PREMIUM_REQUIRED, data: {} });
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.PREMIUM_REQUIRED });
     }
 
     /**
