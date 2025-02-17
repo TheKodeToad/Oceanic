@@ -27,7 +27,8 @@ import type {
     ApplicationEmoji,
     ApplicationEmojis,
     CreateApplicationEmojiOptions,
-    EditApplicationEmojiOptions
+    EditApplicationEmojiOptions,
+    ActivityInstance
 } from "../types/applications";
 import type { JSONClientApplication } from "../types/json";
 import type { ApplicationCommandTypes } from "../Constants";
@@ -197,6 +198,14 @@ export default class ClientApplication extends Base {
      */
     async editGuildCommandPermissions(guildID: string, commandID: string, options: EditApplicationCommandPermissionsOptions): Promise<RESTGuildApplicationCommandPermissions> {
         return this.client.rest.applications.editGuildCommandPermissions(this.id, guildID, commandID, options);
+    }
+
+    /**
+     * Get an activity instance.
+     * @param instanceID The ID of the instance.
+     */
+    async getActivityInstance(instanceID: string): Promise<ActivityInstance> {
+        return this.client.rest.applications.getActivityInstance(this.id, instanceID);
     }
 
     /**

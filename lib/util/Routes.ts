@@ -157,6 +157,7 @@ export const SKU_SUBSCRIPTIONS                     = (skuID: string) => encode`/
 export const SKU_SUBSCRIPTION                      = (skuID: string, subscriptionID: string) => encode`/skus/${skuID}/subscriptions/${subscriptionID}`;
 export const APPLICATION_EMOJIS                    = (applicationID: string) => encode`/applications/${applicationID}/emojis`;
 export const APPLICATION_EMOJI                     = (applicationID: string, emojiID: string) => encode`/applications/${applicationID}/emojis/${emojiID}`;
+export const APPLICATION_ACTIVITY_INSTANCE         = (applicationID: string, instanceID: string) => encode`/applications/${applicationID}/activity-instances/${instanceID}`;
 
 // Misc
 export const GATEWAY                   = "/gateway";

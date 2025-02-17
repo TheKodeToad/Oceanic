@@ -1508,6 +1508,11 @@ export enum MemberJoinSourceType {
     MANUAL_MEMBER_VERIFICATION = 7,
 }
 
+export enum ActivityLocationKind {
+    GUILD_CHANNEL   = "gc",
+    PRIVATE_CHANNEL = "pc",
+}
+
 // entries are intentionally not aligned
 /** The error codes that can be received. See [Discord's Documentation](https://discord.com/developers/docs/topics/opcodes-and-status-codes#json). */
 export enum JSONErrorCodes {

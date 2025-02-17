@@ -3,6 +3,7 @@ import type { ImplementedChannels, InstallParams, RawOAuthGuild, RawUser } from 
 import type { ExclusifyUnion } from "./shared";
 import type { Emoji, WithRequired } from "./misc";
 import type {
+    ActivityLocationKind,
     ApplicationCommandOptionTypes,
     ApplicationCommandPermissionTypes,
     ApplicationCommandTypes,
@@ -517,4 +518,45 @@ export interface SearchSKUSubscriptions {
     limit?: number;
     /** Required except for OAuth queries. */
     userID?: string;
+}
+
+export interface RawActivityInstance {
+    application_id: string;
+    instance_id: string;
+    launch_id: string;
+    location: RawActivityLocation;
+    users: Array<string>;
+}
+
+
+export interface RawActivityLocation {
+    channel_id: string;
+    guild_id?: string | null;
+    id: string;
+    kind: ActivityLocationKind;
+}
+
+export interface ActivityInstance {
+    /** Application ID. */
+    applicationID: string;
+    /** Activity Instance ID. */
+    instanceID: string;
+    /** Unique identifier for the launch. */
+    launchID: string;
+    /** Location the instance is runnning in. */
+    location: ActivityLocation;
+    /** IDs of the Users currently connected to the instance. */
+    users: Array<string>;
+}
+
+
+export interface ActivityLocation {
+    /**	ID of the Channel. */
+    channelID: string;
+    /** ID of the Guild. */
+    guildID?: string | null;
+    /** Unique identifier for the location. */
+    id: string;
+    /**	Enum describing kind of location. `gc` = guild channel, `pc` = private channel (dm, gdm). */
+    kind: ActivityLocationKind;
 }

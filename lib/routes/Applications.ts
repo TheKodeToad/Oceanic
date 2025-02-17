@@ -28,6 +28,7 @@ import Entitlement from "../structures/Entitlement";
 import TestEntitlement from "../structures/TestEntitlement";
 import ClientApplication from "../structures/ClientApplication";
 import type {
+    ActivityInstance,
     ApplicationEmoji,
     ApplicationEmojis,
     CreateApplicationEmojiOptions,
@@ -35,6 +36,7 @@ import type {
     EditApplicationEmojiOptions,
     EditApplicationOptions,
     RESTApplication,
+    RawActivityInstance,
     RawApplicationEmoji,
     RawApplicationEmojis,
     RawClientApplication,
@@ -385,6 +387,29 @@ export default class Applications {
                 permissions:   d.permissions
             };
         });
+    }
+
+    /**
+     * Get an activity instance.
+     * @param applicationID The ID of the application.
+     * @param instanceID The ID of the instance.
+     */
+    async getActivityInstance(applicationID: string, instanceID: string): Promise<ActivityInstance> {
+        return this._manager.authRequest<RawActivityInstance>({
+            method: "GET",
+            path:   Routes.APPLICATION_ACTIVITY_INSTANCE(applicationID, instanceID)
+        }).then(data => ({
+            applicationID: data.application_id,
+            instanceID:    data.instance_id,
+            launchID:      data.launch_id,
+            location:      {
+                channelID: data.location.channel_id,
+                guildID:   data.location.guild_id,
+                id:        data.location.id,
+                kind:      data.location.kind
+            },
+            users: data.users
+        }));
     }
 
     /**
