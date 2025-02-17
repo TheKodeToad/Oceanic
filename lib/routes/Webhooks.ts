@@ -145,7 +145,16 @@ export default class Webhooks {
                 attachments:      options.attachments,
                 components:       options.components ? this._manager.client.util.componentsToRaw(options.components) : undefined,
                 content:          options.content,
-                embeds:           options.embeds ? this._manager.client.util.embedsToRaw(options.embeds) : undefined
+                embeds:           options.embeds ? this._manager.client.util.embedsToRaw(options.embeds) : undefined,
+                poll:             options.poll ? {
+                    allow_multiselect: options.poll.allowMultiselect,
+                    answers:           options.poll.answers.map(a => ({
+                        poll_media: a.pollMedia
+                    })),
+                    duration:    options.poll.duration,
+                    layout_type: options.poll.layoutType,
+                    question:    options.poll.question
+                } : undefined
             },
             query,
             files

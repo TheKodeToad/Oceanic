@@ -1,5 +1,5 @@
 /** @module Types/Webhooks */
-import type { CreateMessageOptions, RawChannel } from "./channels";
+import type { CreateMessageOptions, MessagePollOptions, RawChannel } from "./channels";
 import type { RawGuild } from "./guilds";
 import type { RawUser } from "./users";
 import type { Nullable } from "./misc";
@@ -66,7 +66,10 @@ export interface GetWebhookMessageOptions {
     threadID?: string;
 }
 
-export interface EditWebhookMessageOptions extends Nullable<Pick<ExecuteWebhookOptions, "content" | "embeds" | "allowedMentions" | "components" | "attachments" | "threadID" | "files">> {}
+export interface EditWebhookMessageOptions extends Nullable<Pick<ExecuteWebhookOptions, "content" | "embeds" | "allowedMentions" | "components" | "attachments" | "threadID" | "files">> {
+    /** Polls can only be added when editing a deferred interaction response. */
+    poll?: MessagePollOptions;
+}
 
 export interface DeleteWebhookMessageOptions {
     /** The id of the thread the message is in. */
