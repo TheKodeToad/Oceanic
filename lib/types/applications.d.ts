@@ -8,6 +8,8 @@ import type {
     ApplicationCommandPermissionTypes,
     ApplicationCommandTypes,
     ApplicationDiscoverabilityState,
+    ApplicationEventWebhookEventType,
+    ApplicationEventWebhookStatus,
     ApplicationExplicitContentFilterLevel,
     ApplicationIntegrationTypes,
     ApplicationMonetizationState,
@@ -37,6 +39,9 @@ export interface RawApplication {
     description: string;
     discoverability_state?: ApplicationDiscoverabilityState;
     discovery_eligibility_flags?: number;
+    event_webhooks_status: ApplicationEventWebhookStatus;
+    event_webhooks_types?: Array<ApplicationEventWebhookEventType>;
+    event_webhooks_url?: string | null;
     explicit_content_filter?: ApplicationExplicitContentFilterLevel;
     flags?: number;
     guild?: RawOAuthGuild;
@@ -462,6 +467,9 @@ export interface EditApplicationOptions {
     customInstallURL?: string;
     /** The description of the application. */
     description?: string;
+    eventWebhooksStatus?: Exclude<ApplicationEventWebhookStatus, ApplicationEventWebhookStatus.DISABLED_BY_DISCORD>;
+    eventWebhooksTypes?: Array<ApplicationEventWebhookEventType>;
+    eventWebhooksURL?: string | null;
     /** The [public flags](https://discord.com/developers/docs/resources/application#application-object-application-flags) of the application. */
     flags?: number;
     /** The icon for the application. */

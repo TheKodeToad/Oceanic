@@ -7,6 +7,8 @@ import type Client from "../Client";
 import type { InstallParams } from "../types/oauth";
 import type {
     ApplicationDiscoverabilityState,
+    ApplicationEventWebhookEventType,
+    ApplicationEventWebhookStatus,
     ApplicationExplicitContentFilterLevel,
     ApplicationIntegrationTypes,
     ApplicationMonetizationState,
@@ -39,6 +41,12 @@ export default class Application extends ClientApplication {
     discoverabilityState?: ApplicationDiscoverabilityState;
     /** The { @link Constants~ApplicationDiscoveryEligibilityFlags | flags } for this application's discovery eligibility. */
     discoveryEligibilityFlags?: number;
+    /** If webhook events are enabled for the app. */
+    eventWebhooksStatus: ApplicationEventWebhookStatus;
+    /**	List of Webhook event types the app subscribes to. */
+    eventWebhooksTypes?: Array<ApplicationEventWebhookEventType>;
+    /** Event webhooks URL for the app to receive webhook events. */
+    eventWebhooksURL?: string | null;
     /** The explicit content filter for this application. */
     explicitContentFilter?: ApplicationExplicitContentFilterLevel;
     /** If this application is a game sold on Discord, the guild to which it has been linked. This will only be present if recieved via {@link REST/Applications.getCurrent | `/applications/@me`}. */
@@ -108,6 +116,9 @@ export default class Application extends ClientApplication {
         this.description = data.description;
         this.discoverabilityState = data.discoverability_state;
         this.discoveryEligibilityFlags = data.discovery_eligibility_flags;
+        this.eventWebhooksStatus = data.event_webhooks_status;
+        this.eventWebhooksTypes = data.event_webhooks_types;
+        this.eventWebhooksURL = data.event_webhooks_url;
         this.explicitContentFilter = data.explicit_content_filter;
         this.guild = data.guild === undefined ? null : new OAuthGuild(data.guild, client);
         this.guildID = data.guild_id ?? null;

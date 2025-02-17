@@ -1513,6 +1513,19 @@ export enum ActivityLocationKind {
     PRIVATE_CHANNEL = "pc",
 }
 
+export enum ApplicationEventWebhookStatus {
+    DISABLED            = 1,
+    ENABLED             = 2,
+    DISABLED_BY_DISCORD = 3,
+}
+
+export const ApplicationEventWebhookEventTypes = [
+    "APPLICATION_AUTHORIZED",
+    "ENTITLEMENT_CREATE",
+    "QUEST_USER_ENROLLMENT"
+] as const;
+export type ApplicationEventWebhookEventType = typeof ApplicationEventWebhookEventTypes[number];
+
 // entries are intentionally not aligned
 /** The error codes that can be received. See [Discord's Documentation](https://discord.com/developers/docs/topics/opcodes-and-status-codes#json). */
 export enum JSONErrorCodes {
