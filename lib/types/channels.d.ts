@@ -809,6 +809,8 @@ export interface RawMessageInteractionMetadata {
     interacted_message_id?: string;
     name?: string;
     original_response_message_id?: string;
+    target_message_id?: string;
+    target_user?: RawUser;
     triggering_interaction_metadata?: Omit<RawMessageInteractionMetadata, "triggering_interaction_metadata">;
     type: InteractionTypes;
     user: RawUser;
@@ -818,17 +820,37 @@ export interface MessageInteractionMetadata {
     /** Details about the authorizing user or server for the installation(s) relevant to the interaction. See [Discord's docs](https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-authorizing-integration-owners-object) for more information. */
     authorizingIntegrationOwners: AuthorizingIntegrationOwners;
     id: string;
-    /** The ID of the message that contained interactive component, present only on messages created from component interactions */
+    /** The ID of the message that contained interactive component, present only on messages created from component interactions. */
     interactedMessageID?: string;
-    /** Name of the command, including subcommands and subcommand groups, present only on application command interactions. */
+    /** Name of the command, including subcommands and subcommand groups, present only on messages created from application command interactions. */
     name?: string;
     /** The ID of the original response message, present only on follow-up messages. */
     originalResponseMessageID?: string;
+    /** The message the command was run on, present only on messages created from application command interactions. */
+    targetMessageID?: string;
+    /** The user the command was run on, present only on messages created from application command interactions. */
+    targetUser?: User;
     /** Metadata for the interaction that was used to open the modal, present only on modal submit interactions. */
     triggeringInteractionMetadata?: Omit<MessageInteractionMetadata, "triggeringInteractionMetadata" | "name">;
     type: InteractionTypes;
+    /** The user that triggered the reaction. */
     user: User;
 }
+
+export interface ApplicationCommandMessageInteractionMetadata extends Omit<MessageInteractionMetadata, "triggeringInteractionMetadata" | "name" | "interactedMessageID" | "type">, Required<Pick<MessageInteractionMetadata, "name">> {
+    type: InteractionTypes.APPLICATION_COMMAND;
+}
+
+export interface ComponentMessageInteractionMetadata extends Omit<MessageInteractionMetadata, "triggeringInteractionMetadata" | "name" | "interactedMessageID" | "targetMessageID" | "targetUser" | "type">, Required<Pick<MessageInteractionMetadata, "interactedMessageID">> {
+    type: InteractionTypes.MESSAGE_COMPONENT;
+}
+
+export interface ModalSubmitMessageInteractionMetadata extends Omit<MessageInteractionMetadata, "triggeringInteractionMetadata" | "name" | "interactedMessageID" | "targetMessageID" | "targetUser" | "type"> {
+    triggeringInteractionMetadata: ApplicationCommandMessageInteractionMetadata | ComponentMessageInteractionMetadata;
+    type: InteractionTypes.MODAL_SUBMIT;
+}
+
+export type AnyMessageInteractionMetadata = ApplicationCommandMessageInteractionMetadata | ComponentMessageInteractionMetadata | ModalSubmitMessageInteractionMetadata;
 
 
 export interface StickerItem {

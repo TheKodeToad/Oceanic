@@ -468,6 +468,7 @@ export interface JSONMessage extends JSONBase {
     embeds: Array<Embed>;
     flags?: number;
     guildID?: string;
+    /** @deprecated Use {@link JSON/JSONMessage#interactionMetadata | JSONMessage#interactionMetadata } instead. */
     interaction?: {
         id: string;
         member?: JSONMember;
@@ -481,11 +482,15 @@ export interface JSONMessage extends JSONBase {
         interactedMessageID?: string;
         name?: string;
         originalResponseMessageID?: string;
+        targetMessageID?: string;
+        targetUser?: JSONUser;
         triggeringInteractionMetadata?: {
             authorizingIntegrationOwners: AuthorizingIntegrationOwners;
             id: string;
             interactedMessageID?: string;
             originalResponseMessageID?: string;
+            targetMessageID?: string;
+            targetUser?: JSONUser;
             type: InteractionTypes;
             user: JSONUser;
         };

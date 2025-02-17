@@ -35,12 +35,13 @@ import type {
     MessageActionRow,
     AnyThreadChannel,
     RoleSubscriptionData,
-    MessageInteractionMetadata,
     GetPollAnswerUsersOptions,
     Call,
     MessageSnapshot,
     MessageMentions,
-    MessagePollResults
+    MessagePollResults,
+    AnyMessageInteractionMetadata,
+    MessageInteractionMetadata
 } from "../types/channels";
 import type { RawMember } from "../types/guilds";
 import type { DeleteWebhookMessageOptions, EditWebhookMessageOptions } from "../types/webhooks";
@@ -92,7 +93,7 @@ export default class Message<T extends AnyTextableChannel | Uncached = AnyTextab
      */
     interaction?: MessageInteraction;
     /** The interaction info, if this message was the result of an interaction. */
-    interactionMetadata?: MessageInteractionMetadata;
+    interactionMetadata?: AnyMessageInteractionMetadata;
     /** The member that created this message, if this message is in a guild. */
     member: T extends AnyTextableGuildChannel ? Member : Member | undefined;
     /** Channels mentioned in a `CROSSPOSTED` channel follower message. See [Discord's docs](https://discord.com/developers/docs/resources/channel#channel-mention-object) for more information. */
@@ -269,6 +270,8 @@ export default class Message<T extends AnyTextableChannel | Uncached = AnyTextab
                 interactedMessageID:           data.interaction_metadata.interacted_message_id,
                 name:                          data.interaction_metadata.name,
                 originalResponseMessageID:     data.interaction_metadata.original_response_message_id,
+                targetMessageID:               data.interaction_metadata.target_message_id,
+                targetUser:                    data.interaction_metadata.target_user ? this.client.users.update(data.interaction_metadata.target_user) : undefined,
                 type:                          data.interaction_metadata.type,
                 user:                          this.client.users.update(data.interaction_metadata.user),
                 triggeringInteractionMetadata: data.interaction_metadata.triggering_interaction_metadata === undefined ? undefined : {
@@ -276,10 +279,12 @@ export default class Message<T extends AnyTextableChannel | Uncached = AnyTextab
                     id:                           data.interaction_metadata.triggering_interaction_metadata.id,
                     interactedMessageID:          data.interaction_metadata.triggering_interaction_metadata.interacted_message_id,
                     originalResponseMessageID:    data.interaction_metadata.triggering_interaction_metadata.original_response_message_id,
+                    targetMessageID:              data.interaction_metadata.triggering_interaction_metadata.target_message_id,
+                    targetUser:                   data.interaction_metadata.triggering_interaction_metadata.target_user ? this.client.users.update(data.interaction_metadata.triggering_interaction_metadata.target_user) : undefined,
                     type:                         data.interaction_metadata.triggering_interaction_metadata.type,
                     user:                         this.client.users.update(data.interaction_metadata.triggering_interaction_metadata.user)
                 }
-            };
+            } as AnyMessageInteractionMetadata;
         }
         if (data.message_reference) {
             this.messageReference = {
@@ -518,6 +523,7 @@ export default class Message<T extends AnyTextableChannel | Uncached = AnyTextab
         return this.client.rest.channels.startThreadFromMessage<T extends AnnouncementChannel ? AnnouncementThreadChannel : T extends TextChannel ? PublicThreadChannel : never>(this.channelID, this.id, options);
     }
     override toJSON(): JSONMessage {
+        const im = this.interactionMetadata as MessageInteractionMetadata;
         return {
             ...super.toJSON(),
             activity:        this.activity,
@@ -538,21 +544,25 @@ export default class Message<T extends AnyTextableChannel | Uncached = AnyTextab
                 type:   this.interaction.type,
                 user:   this.interaction.user.toJSON()
             },
-            interactionMetadata: this.interactionMetadata === undefined ? undefined : {
-                id:                            this.interactionMetadata.id,
-                interactedMessageID:           this.interactionMetadata.interactedMessageID,
-                name:                          this.interactionMetadata.name,
-                originalResponseMessageID:     this.interactionMetadata.originalResponseMessageID,
-                type:                          this.interactionMetadata.type,
-                user:                          this.interactionMetadata.user instanceof User ? this.interactionMetadata.user.toJSON() : this.interactionMetadata.user,
-                authorizingIntegrationOwners:  this.interactionMetadata.authorizingIntegrationOwners,
-                triggeringInteractionMetadata: this.interactionMetadata.triggeringInteractionMetadata === undefined ? undefined : {
-                    id:                           this.interactionMetadata.triggeringInteractionMetadata.id,
-                    interactedMessageID:          this.interactionMetadata.triggeringInteractionMetadata.interactedMessageID,
-                    originalResponseMessageID:    this.interactionMetadata.triggeringInteractionMetadata.originalResponseMessageID,
-                    type:                         this.interactionMetadata.triggeringInteractionMetadata.type,
-                    user:                         this.interactionMetadata.triggeringInteractionMetadata.user instanceof User ? this.interactionMetadata.triggeringInteractionMetadata.user.toJSON() : this.interactionMetadata.triggeringInteractionMetadata.user,
-                    authorizingIntegrationOwners: this.interactionMetadata.triggeringInteractionMetadata.authorizingIntegrationOwners
+            interactionMetadata: im === undefined ? undefined : {
+                authorizingIntegrationOwners:  im.authorizingIntegrationOwners,
+                id:                            im.id,
+                interactedMessageID:           im.interactedMessageID,
+                name:                          im.name,
+                originalResponseMessageID:     im.originalResponseMessageID,
+                targetMessageID:               im.targetMessageID,
+                targetUser:                    im.targetUser instanceof User ? im.targetUser.toJSON() : im.targetUser,
+                type:                          im.type,
+                user:                          im.user instanceof User ? im.user.toJSON() : im.user,
+                triggeringInteractionMetadata: im.triggeringInteractionMetadata === undefined ? undefined : {
+                    authorizingIntegrationOwners: im.triggeringInteractionMetadata.authorizingIntegrationOwners,
+                    id:                           im.triggeringInteractionMetadata.id,
+                    interactedMessageID:          im.triggeringInteractionMetadata.interactedMessageID,
+                    originalResponseMessageID:    im.triggeringInteractionMetadata.originalResponseMessageID,
+                    targetMessageID:              im.triggeringInteractionMetadata.targetMessageID,
+                    targetUser:                   im.triggeringInteractionMetadata.targetUser instanceof User ? im.triggeringInteractionMetadata.targetUser.toJSON() : im.triggeringInteractionMetadata.targetUser,
+                    type:                         im.triggeringInteractionMetadata.type,
+                    user:                         im.triggeringInteractionMetadata.user instanceof User ? im.triggeringInteractionMetadata.user.toJSON() : im.triggeringInteractionMetadata.user
                 }
             },
             mentionChannels: this.mentionChannels,
