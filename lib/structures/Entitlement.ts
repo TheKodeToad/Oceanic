@@ -5,21 +5,21 @@ import type { JSONEntitlement } from "../types";
 
 /** Represents an entitlement. */
 export default class Entitlement extends BaseEntitlement {
-    endsAt: Date;
-    startsAt: Date;
+    endsAt: Date | null;
+    startsAt: Date | null;
     subscriptionID: string;
     constructor(data: RawEntitlement, client: Client) {
         super(data, client);
-        this.endsAt = new Date(data.ends_at);
-        this.startsAt = new Date(data.starts_at);
+        this.endsAt = data.ends_at ? new Date(data.ends_at) : null;
+        this.startsAt = data.starts_at ? new Date(data.starts_at) : null;
         this.subscriptionID = data.subscription_id;
     }
 
     override toJSON(): JSONEntitlement {
         return {
             ...super.toJSON(),
-            endsAt:         this.endsAt.getTime(),
-            startsAt:       this.startsAt.getTime(),
+            endsAt:         this.endsAt?.getTime() || null,
+            startsAt:       this.startsAt?.getTime() || null,
             subscriptionID: this.subscriptionID
         };
     }

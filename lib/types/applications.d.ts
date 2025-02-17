@@ -412,8 +412,8 @@ export interface RawBaseEntitlement {
 }
 
 export interface RawEntitlement extends RawBaseEntitlement {
-    ends_at: string;
-    starts_at: string;
+    ends_at: string | null;
+    starts_at: string | null;
     subscription_id: string;
 }
 

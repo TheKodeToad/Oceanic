@@ -256,8 +256,8 @@ export interface JSONComponentInteraction extends JSONInteraction {
     user: JSONUser;
 }
 export interface JSONEntitlement extends JSONBaseEntitlement {
-    endsAt: number;
-    startsAt: number;
+    endsAt: number | null;
+    startsAt: number | null;
     subscriptionID: string;
 }
 export interface JSONDiscordHTTPError {
