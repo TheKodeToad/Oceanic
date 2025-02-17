@@ -1,7 +1,7 @@
 /** @module PingInteraction */
 import Interaction from "./Interaction";
 import { InteractionResponseTypes, type InteractionTypes } from "../Constants";
-import type { RawPingInteraction } from "../types/interactions";
+import type { InteractionCallbackResponse, RawPingInteraction } from "../types/interactions";
 import type Client from "../Client";
 import type { JSONPingInteraction } from "../types/json";
 
@@ -15,7 +15,7 @@ export default class PingInteraction extends Interaction {
     /**
      * Responds to the interaction with a `PONG`.
      */
-    async pong(): Promise<void> {
+    async pong(): Promise<InteractionCallbackResponse> {
         return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.PONG });
     }
 

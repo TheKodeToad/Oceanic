@@ -14,6 +14,7 @@ import type {
     AuthorizingIntegrationOwners,
     EditInteractionContent,
     InitialInteractionContent,
+    InteractionCallbackResponse,
     InteractionContent,
     InteractionGuild,
     ModalSubmitInteractionData,
@@ -120,7 +121,7 @@ export default class ModalSubmitInteraction<T extends AnyInteractionChannel | Un
      */
     async createFollowup(options: InteractionContent): Promise<FollowupMessageInteractionResponse<this>> {
         const message = await this.client.rest.interactions.createFollowupMessage<T>(this.applicationID, this.token, options);
-        return new MessageInteractionResponse<ModalSubmitInteraction<T>>(this, message, "followup") as FollowupMessageInteractionResponse<this>;
+        return new MessageInteractionResponse<ModalSubmitInteraction<T>>(this, message, "followup", null) as FollowupMessageInteractionResponse<this>;
     }
 
     /**
@@ -138,15 +139,15 @@ export default class ModalSubmitInteraction<T extends AnyInteractionChannel | Un
             this.client.emit("warn", "You cannot attach files in an initial response. Defer the interaction, then use createFollowup.");
         }
         this.acknowledged = true;
-        await this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.CHANNEL_MESSAGE_WITH_SOURCE, data: options });
-        return new MessageInteractionResponse<this>(this, null, "initial") as InitialMessagedInteractionResponse<this>;
+        const cb = await this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.CHANNEL_MESSAGE_WITH_SOURCE, data: options });
+        return new MessageInteractionResponse<this>(this, null, "initial", cb) as InitialMessagedInteractionResponse<this>;
     }
 
     /**
      * Defer this interaction. This is an initial response, and more than one initial response cannot be used.
      * @param flags The [flags](https://discord.com/developers/docs/resources/channel#message-object-message-flags) to respond with.
      */
-    async defer(flags?: number): Promise<void> {
+    async defer(flags?: number): Promise<InteractionCallbackResponse<T>> {
         if (this.acknowledged) {
             throw new TypeError("Interactions cannot have more than one initial response.");
         }
@@ -158,7 +159,7 @@ export default class ModalSubmitInteraction<T extends AnyInteractionChannel | Un
      * Defer this interaction with a `DEFERRED_UPDATE_MESSAGE` response. This is an initial response, and more than one initial response cannot be used.
      * @param flags The [flags](https://discord.com/developers/docs/resources/channel#message-object-message-flags) to respond with.
      */
-    async deferUpdate(flags?: number): Promise<void> {
+    async deferUpdate(flags?: number): Promise<InteractionCallbackResponse<T>> {
         if (this.acknowledged) {
             throw new TypeError("Interactions cannot have more than one initial response.");
         }
@@ -202,7 +203,7 @@ export default class ModalSubmitInteraction<T extends AnyInteractionChannel | Un
      * Edit the message this interaction is from. If this interaction has already been acknowledged, use `createFollowup`.
      * @param options The options for editing the message.
      */
-    async editParent(options: InteractionContent): Promise<void> {
+    async editParent(options: InteractionContent): Promise<InteractionCallbackResponse<T>> {
         if (this.acknowledged) {
             throw new TypeError("Interactions cannot have more than one initial response.");
         }
@@ -236,16 +237,28 @@ export default class ModalSubmitInteraction<T extends AnyInteractionChannel | Un
     }
 
     /**
-     * Show a "premium required" response to the user. This is an initial response, and more than one initial response cannot be used.
-     * @deprecated The {@link Constants~InteractionResponseTypes.PREMIUM_REQUIRED | PREMIUM_REQUIRED} interaction response type is now deprecated in favor of using {@link Types/Channels~PremiumButton | custom premium buttons}.
+     * Launch the bot's activity. This is an initial response, and more than one initial response cannot be used.
      */
-    async premiumRequired(): Promise<void> {
+    async launchActivity(): Promise<InteractionCallbackResponse<T>> {
         if (this.acknowledged) {
             throw new TypeError("Interactions cannot have more than one initial response.");
         }
 
         this.acknowledged = true;
-        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.PREMIUM_REQUIRED, data: {} });
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.LAUNCH_ACTIVITY });
+    }
+
+    /**
+     * Show a "premium required" response to the user. This is an initial response, and more than one initial response cannot be used.
+     * @deprecated The {@link Constants~InteractionResponseTypes.PREMIUM_REQUIRED | PREMIUM_REQUIRED} interaction response type is now deprecated in favor of using {@link Types/Channels~PremiumButton | custom premium buttons}.
+     */
+    async premiumRequired(): Promise<InteractionCallbackResponse<T>> {
+        if (this.acknowledged) {
+            throw new TypeError("Interactions cannot have more than one initial response.");
+        }
+
+        this.acknowledged = true;
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.PREMIUM_REQUIRED });
     }
 
     /**

@@ -13,6 +13,7 @@ import type {
     AuthorizingIntegrationOwners,
     AutocompleteChoice,
     AutocompleteInteractionData,
+    InteractionCallbackResponse,
     InteractionGuild,
     RawAutocompleteInteraction
 } from "../types/interactions";
@@ -110,7 +111,7 @@ export default class AutocompleteInteraction<T extends AnyInteractionChannel | U
      * Acknowledge this interaction with a set of choices. This is an initial response, and more than one initial response cannot be used.
      * @param choices The choices to send.
      */
-    async result(choices: Array<AutocompleteChoice>): Promise<void> {
+    async result(choices: Array<AutocompleteChoice>): Promise<InteractionCallbackResponse> {
         if (this.acknowledged) {
             throw new TypeError("Interactions cannot have more than one initial response.");
         }

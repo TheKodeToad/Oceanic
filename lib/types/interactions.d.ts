@@ -378,3 +378,58 @@ export type ModalSubmitComponents = ModalSubmitTextInputComponent;
 export interface ModalSubmitTextInputComponent extends ModalSubmitComponentsStringValue<ComponentTypes.TEXT_INPUT> {}
 
 export type ApplicationCommandTypesWithTarget = ApplicationCommandTypes.USER | ApplicationCommandTypes.MESSAGE;
+
+export interface RawInteractionCallbackResponse {
+    interaction: RawInteractionCallback;
+    resource?: RawInteractionCallbackResource;
+}
+
+export interface RawInteractionCallback {
+    activity_instance_id?: string;
+    id: string;
+    response_message_ephemeral?: boolean;
+    response_message_id?: string;
+    response_message_loading?: boolean;
+    type: InteractionTypes;
+}
+
+export interface RawInteractionCallbackResource {
+    activity_instance?: Array<InteractionCallbackActivityInstance>;
+    message?: RawMessage;
+    type: InteractionResponseTypes;
+}
+
+export interface InteractionCallbackActivityInstance {
+    /** Instance ID of the Activity if one was launched or joined. */
+    id: string;
+}
+
+export interface InteractionCallbackResponse<CH extends AnyInteractionChannel | Uncached = AnyInteractionChannel | Uncached> {
+    /** The interaction object associated with the interaction response. */
+    interaction: InteractionCallback;
+    /** The resource that was created by the interaction response. */
+    resource?: InteractionCallbackResource<CH>;
+}
+
+export interface InteractionCallback {
+    /** Instance ID of the Activity if one was launched or joined. */
+    activityInstanceID?: string;
+    /** ID of the interaction. */
+    id: string;
+    /** Whether or not the response message was ephemeral. */
+    responseMessageEphemeral?: boolean;
+    /** ID of the message that was created by the interaction. */
+    responseMessageID?: string;
+    /** Whether or not the message is in a loading state. */
+    responseMessageLoading?: boolean;
+    /** Interaction type. */
+    type: InteractionTypes;
+}
+
+export interface InteractionCallbackResource<CH extends AnyInteractionChannel | Uncached = AnyInteractionChannel | Uncached> {
+    /** Represents the Activity launched by this interaction. Only present if type is `LAUNCH_ACTIVITY`. */
+    activityInstance?: Array<InteractionCallbackActivityInstance>;
+    /** Message created by the interaction. Only present if type is either `CHANNEL_MESSAGE_WITH_SOURCE` or `UPDATE_MESSAGE`. */
+    message?: Message<CH>;
+    type: InteractionResponseTypes;
+}

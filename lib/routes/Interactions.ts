@@ -1,11 +1,17 @@
 /** @module REST/Interactions */
-import type { EditInteractionContent, InteractionContent, InteractionResponse } from "../types/interactions";
+import type {
+    EditInteractionContent,
+    InteractionCallbackResponse,
+    InteractionContent,
+    InteractionResponse,
+    RawInteractionCallbackResponse
+} from "../types/interactions";
 import type { ExecuteWebhookWaitOptions } from "../types/webhooks";
 import * as Routes from "../util/Routes";
 import { InteractionResponseTypes } from "../Constants";
 import type RESTManager from "../rest/RESTManager";
 import type Message from "../structures/Message";
-import type { AnyTextableChannel } from "../types/channels";
+import type { AnyInteractionChannel, AnyTextableChannel } from "../types/channels";
 import type { Uncached } from "../types/shared";
 
 /** Various methods for interacting with interactions. Located at {@link Client#rest | Client#rest}{@link RESTManager#interactions | .interactions}. */
@@ -33,7 +39,7 @@ export default class Interactions {
      * @param options The options for creating the interaction response.
      * @caching This method **does not** cache its result.
      */
-    async createInteractionResponse(interactionID: string, interactionToken: string, options: InteractionResponse): Promise<void> {
+    async createInteractionResponse<CH extends AnyInteractionChannel | Uncached = AnyInteractionChannel | Uncached>(interactionID: string, interactionToken: string, options: InteractionResponse): Promise<InteractionCallbackResponse<CH>> {
         let data: unknown;
         switch (options.type) {
             case InteractionResponseTypes.PONG:
@@ -88,7 +94,7 @@ export default class Interactions {
                 break;
             }
         }
-        await this._manager.authRequest<null>({
+        return this._manager.authRequest<RawInteractionCallbackResponse>({
             method: "POST",
             path:   Routes.INTERACTION_CALLBACK(interactionID, interactionToken),
             route:  "/interactions/:id/:token/callback",
@@ -96,7 +102,21 @@ export default class Interactions {
                 data,
                 type: options.type
             }
-        });
+        }).then(d => ({
+            interaction: {
+                activityInstanceID:       d.interaction.activity_instance_id,
+                id:                       d.interaction.id,
+                responseMessageEphemeral: d.interaction.response_message_ephemeral,
+                responseMessageID:        d.interaction.response_message_id,
+                responseMessageLoading:   d.interaction.response_message_loading,
+                type:                     d.interaction.type
+            },
+            resource: d.resource ? {
+                type:             d.resource.type,
+                activityInstance: d.resource.activity_instance,
+                message:          d.resource.message ? this._manager.client.util.updateMessage(d.resource.message) : undefined
+            } : undefined
+        }));
     }
 
     /**
