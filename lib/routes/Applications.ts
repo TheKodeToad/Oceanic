@@ -36,9 +36,12 @@ import type {
     RESTApplication,
     RawApplicationEmoji,
     RawApplicationEmojis,
-    RawClientApplication
+    RawClientApplication,
+    RawSubscription,
+    SearchSKUSubscriptions
 } from "../types";
 import Application from "../structures/Application";
+import Subscription from "../structures/Subscription";
 
 /** Various methods for interacting with application commands. Located at {@link Client#rest | Client#rest}{@link RESTManager#applications | .applications}. */
 export default class Applications {
@@ -439,11 +442,12 @@ export default class Applications {
         const query = new URLSearchParams();
         if (options.after !== undefined) query.set("after", options.after);
         if (options.before !== undefined) query.set("before", options.before);
+        if (options.excludeDeleted !== undefined) query.set("exclude_deleted", String(options.excludeDeleted));
         if (options.excludeEnded !== undefined) query.set("exclude_ended", String(options.excludeEnded));
         if (options.guildID !== undefined) query.set("guild_id", options.guildID);
         if (options.limit !== undefined) query.set("limit", String(options.limit));
         if (options.skuIDs !== undefined) query.set("sku_ids", options.skuIDs.join(","));
-        if (options.userID !== undefined) query.set("subscription_id", options.userID);
+        if (options.userID !== undefined) query.set("user_id", options.userID);
         return this._manager.authRequest<Array<RawEntitlement | RawTestEntitlement>>({
             method: "GET",
             path:   Routes.ENTITLEMENTS(applicationID),
@@ -566,6 +570,36 @@ export default class Applications {
             id:            d.id,
             permissions:   d.permissions
         })));
+    }
+
+    /**
+     * Get the subscription for an SKU.
+     * @param skuID The ID of the SKU to get the subscription of.
+     * @param subscriptionID The ID of the subscription to get.
+     */
+    async getSKUSubscription(skuID: string, subscriptionID: string): Promise<Subscription> {
+        return this._manager.authRequest<RawSubscription>({
+            method: "GET",
+            path:   Routes.SKU_SUBSCRIPTION(skuID, subscriptionID)
+        }).then(data => new Subscription(data, this._manager.client));
+    }
+
+    /**
+     * Get the subscriptions for an SKU.
+     * @param skuID The ID of the SKU to get the subscriptions of.
+     * @param options The options for getting the subscriptions.
+     */
+    async getSKUSubscriptions(skuID: string, options: SearchSKUSubscriptions): Promise<Array<Subscription>> {
+        const query = new URLSearchParams();
+        if (options.after !== undefined) query.set("after", options.after);
+        if (options.before !== undefined) query.set("before", options.before);
+        if (options.limit !== undefined) query.set("limit", String(options.limit));
+        if (options.userID !== undefined) query.set("user_id", options.userID);
+        return this._manager.authRequest<Array<RawSubscription>>({
+            method: "GET",
+            path:   Routes.SKU_SUBSCRIPTIONS(skuID),
+            query
+        }).then(data => data.map(d => new Subscription(d, this._manager.client)));
     }
 
     /**

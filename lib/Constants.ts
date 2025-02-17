@@ -1386,6 +1386,12 @@ export enum SKUAccessTypes {
     PUBLIC = 1,
 }
 
+export enum SubscriptionStatuses {
+    ACTIVE   = 0,
+    ENDING   = 1,
+    INACTIVE = 2,
+}
+
 export enum PollLayoutType {
     DEFAULT = 1,
 }

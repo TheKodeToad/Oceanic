@@ -71,6 +71,7 @@ export { default as Shard } from "./gateway/Shard";
 export { default as ShardManager } from "./gateway/ShardManager";
 export { default as StageChannel } from "./structures/StageChannel";
 export { default as StageInstance } from "./structures/StageInstance";
+export { default as Subscription } from "./structures/Subscription";
 export { default as Team } from "./structures/Team";
 export { default as TestEntitlement } from "./structures/TestEntitlement";
 export { default as TextableChannel } from "./structures/TextableChannel";

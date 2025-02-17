@@ -153,6 +153,8 @@ export const ENTITLEMENTS                          = (applicationID: string) => 
 export const ENTITLEMENT                           = (applicationID: string, entitlementID: string) => encode`/applications/${applicationID}/entitlements/${entitlementID}`;
 export const CONSUME_ENTITLEMENT                   = (applicationID: string, entitlementID: string) => encode`/applications/${applicationID}/entitlements/${entitlementID}/consume`;
 export const SKUS                                  = (applicationID: string) => encode`/applications/${applicationID}/skus`;
+export const SKU_SUBSCRIPTIONS                     = (skuID: string) => encode`/skus/${skuID}/subscriptions`;
+export const SKU_SUBSCRIPTION                      = (skuID: string, subscriptionID: string) => encode`/skus/${skuID}/subscriptions/${subscriptionID}`;
 export const APPLICATION_EMOJIS                    = (applicationID: string) => encode`/applications/${applicationID}/emojis`;
 export const APPLICATION_EMOJI                     = (applicationID: string, emojiID: string) => encode`/applications/${applicationID}/emojis/${emojiID}`;
 

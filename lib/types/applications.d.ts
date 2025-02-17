@@ -18,6 +18,7 @@ import type {
     SKUAccessTypes,
     SKUTypes,
     StoreApplicationState,
+    SubscriptionStatuses,
     TeamMembershipState
 } from "../Constants";
 import type ApplicationCommand from "../structures/ApplicationCommand";
@@ -422,6 +423,7 @@ export interface RawTestEntitlement extends RawBaseEntitlement {}
 export interface SearchEntitlementsOptions {
     after?: string;
     before?: string;
+    excludeDeleted?: boolean;
     excludeEnded?: boolean;
     guildID?: string;
     limit?: number;
@@ -486,4 +488,25 @@ export interface CreateApplicationEmojiOptions {
 
 export interface EditApplicationEmojiOptions {
     name: string;
+}
+
+export interface RawSubscription {
+    canceled_at: string | null;
+    country?: string;
+    current_period_end: string;
+    current_period_start: string;
+    entitlement_ids: Array<string>;
+    id: string;
+    renewal_sku_ids: Array<string>;
+    sku_ids: Array<string>;
+    status: SubscriptionStatuses;
+    user_id: string;
+}
+
+export interface SearchSKUSubscriptions {
+    after?: string;
+    before?: string;
+    limit?: number;
+    /** Required except for OAuth queries. */
+    userID?: string;
 }
