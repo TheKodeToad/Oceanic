@@ -1,6 +1,6 @@
 /** @module Types/Channels */
 import type { NullablePartialEmoji, PartialEmoji, RawInviteGuild, RawMember } from "./guilds";
-import type { RawApplication, RawPartialApplication } from "./applications";
+import type { RESTApplication, RawApplication, RawPartialApplication } from "./applications";
 import type { RawUser, RawUserWithMember } from "./users";
 import type { File } from "./request-handler";
 import type { RawScheduledEvent } from "./scheduled-events";
@@ -307,7 +307,7 @@ export interface CreateMessageOptions {
     enforceNonce?: boolean;
     /** The files to send. */
     files?: Array<File>;
-    /** The [flags](https://discord.com/developers/docs/resources/channel#message-object-message-flags) to send with the message. */
+    /** The {@link Constants.MessageFlags | Message Flags} to send with the message. */
     flags?: number;
     /** Reply to a message. */
     messageReference?: MessageReference;
@@ -355,6 +355,8 @@ export interface EmbedBase extends EmbedOptionsBase {
 export interface RawEmbed extends EmbedBase {
     author?: RawEmbedAuthor;
     fields?: Array<EmbedField>;
+    /** The {@link Constants.EmbedFlags | Embed Flags} for the embed. */
+    flags?: number;
     footer?: RawEmbedFooter;
     image?: RawEmbedImage;
     provider?: EmbedProvider;
@@ -365,6 +367,8 @@ export interface RawEmbed extends EmbedBase {
 export interface Embed extends EmbedBase {
     author?: EmbedAuthor;
     fields?: Array<EmbedField>;
+    /** The {@link Constants.EmbedFlags | Embed Flags} for the embed. */
+    flags?: number;
     footer?: EmbedFooter;
     image?: EmbedImage;
     provider?: EmbedProvider;
@@ -384,36 +388,41 @@ export interface RawEmbedAuthor extends EmbedAuthorBase {
     proxy_icon_url?: string;
 }
 
-export interface EmbedAuthorOptions extends EmbedAuthorBase {
+export interface EmbedAuthor extends EmbedAuthorOptions {
     iconURL?: string;
+    proxyIconURL?: string;
 }
 
 export interface RawEmbedAuthorOptions extends EmbedAuthorBase {
     icon_url?: string;
 }
 
-export interface EmbedAuthor extends EmbedAuthorOptions {
+export interface EmbedAuthorOptions extends EmbedAuthorBase {
     iconURL?: string;
-    proxyIconURL?: string;
-}
-export interface EmbedFooterBase {
-    text: string;
 }
 
-export interface EmbedFooterOptions extends EmbedFooterBase {
-    iconURL?: string;
+export interface EmbedFooterBase {
+    text: string;
 }
 
 export interface RawEmbedFooterOptions extends EmbedFooterBase {
     icon_url?: string;
 }
 
+export interface EmbedFooterOptions extends EmbedFooterBase {
+    iconURL?: string;
+}
+
 export interface RawEmbedFooter extends EmbedFooterBase {
+    /** The {@link Constants.EmbedMediaFlags | Embed Media Flags} for the media. */
+    flags?: number;
     icon_url?: string;
     proxy_icon_url?: string;
 }
 
 export interface EmbedFooter extends EmbedFooterOptions {
+    /** The {@link Constants.EmbedMediaFlags | Embed Media Flags} for the media. */
+    flags?: number;
     iconURL?: string;
     proxyIconURL?: string;
 }
@@ -424,15 +433,19 @@ export interface EmbedImageBase {
 }
 
 export interface RawEmbedImage extends EmbedImageBase, EmbedImageOptions {
+    /** The {@link Constants.EmbedMediaFlags | Embed Media Flags} for the media. */
+    flags?: number;
     proxy_url?: string;
+}
+
+export interface EmbedImage extends EmbedImageBase, EmbedImageOptions {
+    /** The {@link Constants.EmbedMediaFlags | Embed Media Flags} for the media. */
+    flags?: number;
+    proxyURL?: string;
 }
 
 export interface EmbedImageOptions {
     url: string;
-}
-
-export interface EmbedImage extends EmbedImageBase, EmbedImageOptions {
-    proxyURL?: string;
 }
 
 export interface EmbedField {
@@ -653,6 +666,9 @@ export interface TextInput {
 }
 
 export interface RawAttachment {
+    application?: RESTApplication;
+    clip_created_at?: string;
+    clip_participants?: Array<RawUser>;
     content_type?: string;
     description?: string;
     duration_secs?: number;

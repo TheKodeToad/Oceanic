@@ -1,11 +1,19 @@
 /** @module Attachment */
 import Base from "./Base";
+import type User from "./User";
+import Application from "./Application";
 import type Client from "../Client";
 import type { RawAttachment } from "../types/channels";
 import type { JSONAttachment } from "../types/json";
 
 /** Represents a file attachment. */
 export default class Attachment extends Base {
+    /** For Clips, the application in the stream, if recognized. */
+    application?: Application;
+    /** For Clips, when the clip was created. */
+    clipCreatedAt?: Date;
+    /** For Clips, array of users who were in the stream. */
+    clipParticipants?: Array<User>;
     /** The mime type of this attachment. */
     contentType?: string;
     /** The description of this attachment. */
@@ -34,6 +42,9 @@ export default class Attachment extends Base {
     width?: number;
     constructor(data: RawAttachment, client: Client) {
         super(data.id, client);
+        this.application = data.application ? new Application(data.application, client) : undefined;
+        this.clipCreatedAt = data.clip_created_at ? new Date(data.clip_created_at) : undefined;
+        this.clipParticipants = data.clip_participants ? data.clip_participants.map(user => client.users.update(user)) : undefined;
         this.contentType = data.content_type;
         this.description = data.description;
         this.durationSecs = data.duration_secs;

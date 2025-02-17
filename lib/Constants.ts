@@ -1350,6 +1350,7 @@ export enum AttachmentFlags {
     IS_REMIX                = 1 << 2,
     IS_SPOILER              = 1 << 3,
     CONTAINS_EXPLICIT_MEDIA = 1 << 4,
+    IS_ANIMATED             = 1 << 5,
 }
 
 export enum SKUTypes {
@@ -1527,6 +1528,15 @@ export const ApplicationEventWebhookEventTypes = [
     "QUEST_USER_ENROLLMENT"
 ] as const;
 export type ApplicationEventWebhookEventType = typeof ApplicationEventWebhookEventTypes[number];
+
+export enum EmbedFlags {
+    CONTAINS_EXPLICIT_MEDIA =    1 << 4,
+    IS_CONTENT_INVENTORY_ENTRY = 1 << 5,
+}
+
+export enum EmbedMediaFlags {
+    IS_ANIMATED = 1 << 5,
+}
 
 // entries are intentionally not aligned
 /** The error codes that can be received. See [Discord's Documentation](https://discord.com/developers/docs/topics/opcodes-and-status-codes#json). */

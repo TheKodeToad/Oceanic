@@ -422,17 +422,20 @@ export default class Util {
                 name:   field.name,
                 value:  field.value
             })),
+            flags:  embed.flags,
             footer: embed.footer === undefined ? undefined : {
-                text:         embed.footer.text,
+                flags:        embed.footer.flags,
                 iconURL:      embed.footer.icon_url,
-                proxyIconURL: embed.footer.proxy_icon_url
+                proxyIconURL: embed.footer.proxy_icon_url,
+                text:         embed.footer.text
             },
             timestamp: embed.timestamp,
             title:     embed.title,
             image:     embed.image === undefined ? undefined : {
-                url:      embed.image.url,
+                flags:    embed.image.flags,
                 height:   embed.image.height,
                 proxyURL: embed.image.proxy_url,
+                url:      embed.image.url,
                 width:    embed.image.width
             },
             provider: embed.provider === undefined ? undefined : {
