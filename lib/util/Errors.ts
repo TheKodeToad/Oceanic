@@ -64,3 +64,10 @@ export class RateLimitedError extends Error {
         this.delay = delay;
     }
 }
+
+export class NotImplementedError extends Error {
+    override name = "NotImplementedError";
+    constructor(message = "Not implemented") {
+        super(message);
+    }
+}

@@ -22,7 +22,7 @@ import type { RawGuild } from "../types/guilds";
 import ExtendedUser from "../structures/ExtendedUser";
 import type Guild from "../structures/Guild";
 import type { ShardEvents } from "../types/events";
-import { GatewayError, DependencyError } from "../util/Errors";
+import { GatewayError, DependencyError, NotImplementedError } from "../util/Errors";
 import ClientApplication from "../structures/ClientApplication";
 import type Soundboard from "../structures/Soundboard";
 import WebSocket, { type Data } from "ws";
@@ -144,7 +144,7 @@ export default class Shard extends TypedEmitter<ShardEvents> {
         }
         this.resumeURL = `${url}?v=${GATEWAY_VERSION}&encoding=${Erlpack ? "etf" : "json"}`;
         if (this.client.shards.options.compress) {
-            const type = this.client.shards.options.compress === "zstd-stream" ? "zstd-stream" : "zlib-stream";
+            const type = /* this.client.shards.options.compress === "zstd-stream" ? "zstd-stream" :  */"zlib-stream";
             this.resumeURL += `&compress=${type}`;
         }
         this.sessionID = data.session_id;
@@ -212,14 +212,15 @@ export default class Shard extends TypedEmitter<ShardEvents> {
         if (this.client.shards.options.compress) {
             const type = this.client.shards.options.compress;
             /* eslint-disable @typescript-eslint/no-var-requires, unicorn/prefer-module */
-            if (type === "zstd-stream") {
-                if (!this.client.util._isModuleInstalled("fzstd")) {
+            if (String(type) === "zstd-stream") {
+                throw new NotImplementedError("zstd-stream compression has been temporarily removed");
+                /* if (!this.client.util._isModuleInstalled("fzstd")) {
                     throw new DependencyError("Cannot use zstd based compression without fzstd.");
                 }
                 this.client.emit("debug", "Initializing zstd-based compression with fzstd.");
                 const ZstdCompression = (require(`${__dirname}/compression/zstd`) as { default: new(shard: Shard) => Compression; }).default;
-                this._compressor = new ZstdCompression(this);
-            } else if (type === "zlib-stream") {
+                this._compressor = new ZstdCompression(this); */
+            } else  if (type === "zlib-stream") {
                 const hasZlibSync = this.client.util._isModuleInstalled("zlib-sync");
                 const hasPako = this.client.util._isModuleInstalled("pako");
 
