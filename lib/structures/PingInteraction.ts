@@ -16,7 +16,7 @@ export default class PingInteraction extends Interaction {
      * Responds to the interaction with a `PONG`.
      */
     async pong(): Promise<InteractionCallbackResponse> {
-        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.PONG });
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.PONG }, true);
     }
 
     override toJSON(): JSONPingInteraction {

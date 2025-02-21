@@ -197,7 +197,7 @@ export default class ComponentInteraction<V extends ComponentTypes.BUTTON | Sele
             this.client.emit("warn", "You cannot attach files in an initial response. Defer the interaction, then use createFollowup.");
         }
         this.acknowledged = true;
-        const cb = await this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.CHANNEL_MESSAGE_WITH_SOURCE, data: options });
+        const cb = await this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.CHANNEL_MESSAGE_WITH_SOURCE, data: options }, true);
         return new MessageInteractionResponse<this>(this, null, "initial", cb) as InitialMessagedInteractionResponse<this>;
     }
 
@@ -210,7 +210,7 @@ export default class ComponentInteraction<V extends ComponentTypes.BUTTON | Sele
             throw new TypeError("Interactions cannot have more than one initial response.");
         }
         this.acknowledged = true;
-        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.MODAL, data: options });
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.MODAL, data: options }, true);
     }
 
     /**
@@ -222,7 +222,7 @@ export default class ComponentInteraction<V extends ComponentTypes.BUTTON | Sele
             throw new TypeError("Interactions cannot have more than one initial response.");
         }
         this.acknowledged = true;
-        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: { flags } });
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: { flags } }, true);
     }
 
     /**
@@ -234,7 +234,7 @@ export default class ComponentInteraction<V extends ComponentTypes.BUTTON | Sele
             throw new TypeError("Interactions cannot have more than one initial response.");
         }
         this.acknowledged = true;
-        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.DEFERRED_UPDATE_MESSAGE, data: { flags } });
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.DEFERRED_UPDATE_MESSAGE, data: { flags } }, true);
     }
 
     /**
@@ -278,7 +278,7 @@ export default class ComponentInteraction<V extends ComponentTypes.BUTTON | Sele
             throw new TypeError("Interactions cannot have more than one initial response.");
         }
         this.acknowledged = true;
-        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.UPDATE_MESSAGE, data: options });
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.UPDATE_MESSAGE, data: options }, true);
     }
 
     /**
@@ -329,7 +329,7 @@ export default class ComponentInteraction<V extends ComponentTypes.BUTTON | Sele
         }
 
         this.acknowledged = true;
-        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.LAUNCH_ACTIVITY });
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.LAUNCH_ACTIVITY }, true);
     }
 
     /**
@@ -342,7 +342,7 @@ export default class ComponentInteraction<V extends ComponentTypes.BUTTON | Sele
         }
 
         this.acknowledged = true;
-        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.PREMIUM_REQUIRED });
+        return this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.PREMIUM_REQUIRED }, true);
     }
 
     /**

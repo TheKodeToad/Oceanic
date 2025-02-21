@@ -37,9 +37,12 @@ export default class Interactions {
      * @param interactionID The ID of the interaction.
      * @param interactionToken The token of the interaction.
      * @param options The options for creating the interaction response.
+     * @param withResponse Whether to include the response in the result.
      * @caching This method **does not** cache its result.
      */
-    async createInteractionResponse<CH extends AnyInteractionChannel | Uncached = AnyInteractionChannel | Uncached>(interactionID: string, interactionToken: string, options: InteractionResponse): Promise<InteractionCallbackResponse<CH>> {
+    async createInteractionResponse(interactionID: string, interactionToken: string, options: InteractionResponse, withResponse?: false): Promise<null>;
+    async createInteractionResponse<CH extends AnyInteractionChannel | Uncached = AnyInteractionChannel | Uncached>(interactionID: string, interactionToken: string, options: InteractionResponse, withResponse: true): Promise<InteractionCallbackResponse<CH>>;
+    async createInteractionResponse<CH extends AnyInteractionChannel | Uncached = AnyInteractionChannel | Uncached>(interactionID: string, interactionToken: string, options: InteractionResponse, withResponse = false): Promise<InteractionCallbackResponse<CH> | null> {
         let data: unknown;
         switch (options.type) {
             case InteractionResponseTypes.PONG:
@@ -94,6 +97,8 @@ export default class Interactions {
                 break;
             }
         }
+        const query = new URLSearchParams();
+        if (withResponse) query.set("with_response", "true");
         return this._manager.authRequest<RawInteractionCallbackResponse>({
             method: "POST",
             path:   Routes.INTERACTION_CALLBACK(interactionID, interactionToken),
@@ -101,7 +106,8 @@ export default class Interactions {
             json:   {
                 data,
                 type: options.type
-            }
+            },
+            query
         }).then(d => ({
             interaction: {
                 activityInstanceID:       d.interaction.activity_instance_id,
