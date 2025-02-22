@@ -32,7 +32,6 @@ import type {
     StartThreadFromMessageOptions,
     StickerItem,
     MessageReaction,
-    MessageActionRow,
     AnyThreadChannel,
     RoleSubscriptionData,
     GetPollAnswerUsersOptions,
@@ -41,7 +40,8 @@ import type {
     MessageMentions,
     MessagePollResults,
     AnyMessageInteractionMetadata,
-    MessageInteractionMetadata
+    MessageInteractionMetadata,
+    MessageComponent
 } from "../types/channels";
 import type { RawMember } from "../types/guilds";
 import type { DeleteWebhookMessageOptions, EditWebhookMessageOptions } from "../types/webhooks";
@@ -76,7 +76,7 @@ export default class Message<T extends AnyTextableChannel | Uncached = AnyTextab
     /** The ID of the channel this message was created in. */
     channelID: string;
     /** The components on this message. */
-    components: Array<MessageActionRow>;
+    components: Array<MessageComponent>;
     /** The content of this message. */
     content: string;
     /** The timestamp at which this message was last edited. */

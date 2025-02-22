@@ -3,11 +3,11 @@ import type { EditWebhookMessageOptions, ExecuteWebhookOptions } from "./webhook
 import type {
     AnyTextableGuildChannel,
     AnyPrivateChannel,
-    ModalActionRow,
     RawAttachment,
     RawInteractionResolvedChannel,
     RawMessage,
-    AnyInteractionChannel
+    AnyInteractionChannel,
+    ModalComponent
 } from "./channels";
 import type { InteractionMember, RawMember, RawRole } from "./guilds";
 import type { RawUser } from "./users";
@@ -47,7 +47,6 @@ import type ModalSubmitInteractionComponentsWrapper from "../util/interactions/M
 
 export interface InteractionContent extends Pick<ExecuteWebhookOptions, "tts" | "content" | "embeds" | "allowedMentions" | "flags" | "components" | "attachments" | "files" | "poll"> {}
 export interface EditInteractionContent extends Pick<EditWebhookMessageOptions, "content" | "embeds" | "allowedMentions" | "components" | "attachments" | "files" | "poll"> {}
-export interface InitialInteractionContent extends Omit<InteractionContent, "attachments" | "files"> {}
 
 export type InteractionResponse = PingInteractionResponse | MessageInteractionResponse | DeferredInteractionResponse | AutocompleteInteractionResponse | ModalSubmitInteractionResponse | PremiumRequiredResponse | LaunchActivityResponse;
 export interface PingInteractionResponse {
@@ -89,7 +88,7 @@ export interface LaunchActivityResponse {
 
 export interface ModalData {
     /** The components of the modal. Each component needs its own row. `snake_case` keys should be converted to `camelCase`, or passed through {@link Util.rawModalComponents | Util#rawModalComponents}. */
-    components: Array<ModalActionRow>;
+    components: Array<ModalComponent>;
     /** The custom ID of the modal. */
     customID: string;
     /** The title of the modal. */

@@ -22,7 +22,6 @@ import type {
     Component,
     Embed,
     EmbedOptions,
-    MessageActionRow,
     ModalActionRow,
     RawAllowedMentions,
     RawChannel,
@@ -30,7 +29,6 @@ import type {
     RawEmbed,
     RawEmbedOptions,
     RawGuildChannel,
-    RawMessageActionRow,
     RawModalActionRow,
     RawThreadChannel,
     ToComponentFromRaw,
@@ -64,7 +62,11 @@ import type {
     RawEntitlement,
     RawTestEntitlement,
     ApplicationEmoji,
-    RawApplicationEmoji
+    RawApplicationEmoji,
+    MessageComponent,
+    ModalComponent,
+    RawMessageComponent,
+    RawModalComponent
 } from "../types";
 import Message from "../structures/Message";
 import Entitlement from "../structures/Entitlement";
@@ -86,9 +88,9 @@ export default class Util {
         return Array.isArray(embeds) ? data : data[0];
     }
 
-    static rawMessageComponents(components: RawMessageActionRow): MessageActionRow;
-    static rawMessageComponents(components: Array<RawMessageActionRow>): Array<MessageActionRow>;
-    static rawMessageComponents(components: RawMessageActionRow | Array<RawMessageActionRow>): MessageActionRow | Array<MessageActionRow> {
+    static rawMessageComponents(components: RawMessageComponent): MessageComponent;
+    static rawMessageComponents(components: Array<RawMessageComponent>): Array<MessageComponent>;
+    static rawMessageComponents(components: RawMessageComponent | Array<RawMessageComponent>): MessageComponent | Array<MessageComponent> {
         const data = Util.prototype.componentsToParsed(Array.isArray(components) ? components : [components]);
         return Array.isArray(components) ? data : data[0];
     }
@@ -152,6 +154,12 @@ export default class Util {
 
     componentToParsed<T extends RawComponent>(component: T): ToComponentFromRaw<T> {
         switch (component.type) {
+            case ComponentTypes.ACTION_ROW: {
+                return {
+                    components: component.components.map(c => this.componentToParsed(c)),
+                    type:       component.type
+                } as never;
+            }
             case ComponentTypes.BUTTON: {
                 if (component.style === ButtonStyles.LINK) return component as never;
 
@@ -212,6 +220,31 @@ export default class Util {
                     return parsedComponent as never;
                 }
             }
+
+            case ComponentTypes.TEXT_DISPLAY:
+            case ComponentTypes.THUMBNAIL:
+            case ComponentTypes.MEDIA_GALLERY:
+            case ComponentTypes.FILE:
+            case ComponentTypes.SEPARATOR: {
+                return component as never;
+            }
+
+            case ComponentTypes.CONTAINER: {
+                return {
+                    accentColor: component.accent_color,
+                    components:  component.components.map(c => this.componentToParsed(c)),
+                    spoiler:     component.spoiler,
+                    type:        component.type
+                } as never;
+            }
+
+            case ComponentTypes.SECTION: {
+                return {
+                    type:       component.type,
+                    accessory:  component.accessory ? this.componentToParsed(component.accessory) : undefined,
+                    components: component.components.map(c => this.componentToParsed(c))
+                } as never;
+            }
             default: {
                 return component as never;
             }
@@ -220,6 +253,13 @@ export default class Util {
 
     componentToRaw<T extends Component>(component: T): ToRawFromComponent<T> {
         switch (component.type) {
+            case ComponentTypes.ACTION_ROW: {
+                return {
+                    type:       component.type,
+                    components: component.components.map(c => this.componentToRaw(c))
+                } as never;
+            }
+
             case ComponentTypes.BUTTON: {
                 if (component.style === ButtonStyles.LINK) return component as never;
 
@@ -280,24 +320,43 @@ export default class Util {
                     return rawComponent as never;
                 }
             }
+
+            case ComponentTypes.TEXT_DISPLAY:
+            case ComponentTypes.THUMBNAIL:
+            case ComponentTypes.MEDIA_GALLERY:
+            case ComponentTypes.FILE:
+            case ComponentTypes.SEPARATOR: {
+                return component as never;
+            }
+
+            case ComponentTypes.CONTAINER: {
+                return {
+                    accent_color: component.accentColor,
+                    components:   component.components.map(c => this.componentToRaw(c)),
+                    spoiler:      component.spoiler,
+                    type:         component.type
+                } as never;
+            }
+
+            case ComponentTypes.SECTION: {
+                return {
+                    type:       component.type,
+                    accessory:  component.accessory ? this.componentToRaw(component.accessory) : undefined,
+                    components: component.components.map(c => this.componentToRaw(c))
+                } as never;
+            }
             default: {
                 return component as never;
             }
         }
     }
 
-    componentsToParsed<T extends RawModalActionRow | RawMessageActionRow>(components: Array<T>): T extends RawModalActionRow ? Array<ModalActionRow> : T extends RawMessageActionRow ? Array<MessageActionRow> : never {
-        return components.map(row => ({
-            type:       row.type,
-            components: row.components.map(component => this.componentToParsed(component))
-        })) as never;
+    componentsToParsed<T extends RawMessageComponent | RawModalComponent>(components: Array<T>): Array<T extends RawMessageComponent ? MessageComponent : T extends RawModalComponent ? ModalComponent : never> {
+        return components.map(component => this.componentToParsed(component)) as never;
     }
 
-    componentsToRaw<T extends ModalActionRow | MessageActionRow>(components: Array<T>): T extends ModalActionRow ? Array<RawModalActionRow> : T extends MessageActionRow ? Array<RawMessageActionRow> : never {
-        return components.map(row => ({
-            type:       row.type,
-            components: row.components.map(component => this.componentToRaw(component))
-        })) as never;
+    componentsToRaw<T extends MessageComponent | ModalComponent>(components: Array<T>): Array<T extends MessageComponent ? RawMessageComponent : T extends ModalComponent ? RawModalComponent : never> {
+        return components.map(component => this.componentToRaw(component)) as never;
     }
 
     convertApplicationEmoji(raw: RawApplicationEmoji): ApplicationEmoji {

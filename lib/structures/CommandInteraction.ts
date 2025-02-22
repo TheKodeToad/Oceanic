@@ -20,7 +20,6 @@ import type {
     ModalData,
     RawApplicationCommandInteraction,
     ApplicationCommandInteractionResolvedData,
-    InitialInteractionContent,
     InteractionGuild,
     AuthorizingIntegrationOwners,
     EditInteractionContent,
@@ -187,7 +186,7 @@ export default class CommandInteraction<T extends AnyInteractionChannel | Uncach
      * Note that the returned class is not a message. It is a wrapper around the interaction response. The {@link MessageInteractionResponse#getMessage | getMessage} function can be used to get the message.
      * @param options The options for the message.
      */
-    async createMessage(options: InitialInteractionContent): Promise<InitialMessagedInteractionResponse<this>> {
+    async createMessage(options: InteractionContent): Promise<InitialMessagedInteractionResponse<this>> {
         if (this.acknowledged) {
             throw new TypeError("Interactions cannot have more than one initial response.");
         }

@@ -13,6 +13,7 @@ import type RESTManager from "../rest/RESTManager";
 import type Message from "../structures/Message";
 import type { AnyInteractionChannel, AnyTextableChannel } from "../types/channels";
 import type { Uncached } from "../types/shared";
+import type { File } from "../types";
 
 /** Various methods for interacting with interactions. Located at {@link Client#rest | Client#rest}{@link RESTManager#interactions | .interactions}. */
 export default class Interactions {
@@ -43,6 +44,12 @@ export default class Interactions {
     async createInteractionResponse(interactionID: string, interactionToken: string, options: InteractionResponse, withResponse?: false): Promise<null>;
     async createInteractionResponse<CH extends AnyInteractionChannel | Uncached = AnyInteractionChannel | Uncached>(interactionID: string, interactionToken: string, options: InteractionResponse, withResponse: true): Promise<InteractionCallbackResponse<CH>>;
     async createInteractionResponse<CH extends AnyInteractionChannel | Uncached = AnyInteractionChannel | Uncached>(interactionID: string, interactionToken: string, options: InteractionResponse, withResponse = false): Promise<InteractionCallbackResponse<CH> | null> {
+        let files: Array<File> | undefined;
+        if ("data" in options && options.data && "files" in options.data) {
+            files = options.data.files;
+            delete options.data.files;
+        }
+
         let data: unknown;
         switch (options.type) {
             case InteractionResponseTypes.PONG:
@@ -107,22 +114,29 @@ export default class Interactions {
                 data,
                 type: options.type
             },
-            query
-        }).then(d => ({
-            interaction: {
-                activityInstanceID:       d.interaction.activity_instance_id,
-                id:                       d.interaction.id,
-                responseMessageEphemeral: d.interaction.response_message_ephemeral,
-                responseMessageID:        d.interaction.response_message_id,
-                responseMessageLoading:   d.interaction.response_message_loading,
-                type:                     d.interaction.type
-            },
-            resource: d.resource ? {
-                type:             d.resource.type,
-                activityInstance: d.resource.activity_instance,
-                message:          d.resource.message ? this._manager.client.util.updateMessage(d.resource.message) : undefined
-            } : undefined
-        }));
+            query,
+            files
+        }).then(d => {
+            if (withResponse) {
+                return {
+                    interaction: {
+                        activityInstanceID:       d.interaction.activity_instance_id,
+                        id:                       d.interaction.id,
+                        responseMessageEphemeral: d.interaction.response_message_ephemeral,
+                        responseMessageID:        d.interaction.response_message_id,
+                        responseMessageLoading:   d.interaction.response_message_loading,
+                        type:                     d.interaction.type
+                    },
+                    resource: d.resource ? {
+                        type:             d.resource.type,
+                        activityInstance: d.resource.activity_instance,
+                        message:          d.resource.message ? this._manager.client.util.updateMessage(d.resource.message) : undefined
+                    } : undefined
+                };
+            }
+
+            return null;
+        });
     }
 
     /**

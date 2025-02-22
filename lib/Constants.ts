@@ -803,14 +803,17 @@ export enum ComponentTypes {
     ROLE_SELECT        = 6,
     MENTIONABLE_SELECT = 7,
     CHANNEL_SELECT     = 8,
-
-    TEXT = 10,
-
-    MEDIA_GALLERY = 12,
-
-    SEPARATOR = 14,
+    SECTION            = 9,
+    /** @deprecated Use {@link ComponentTypes.TEXT_DISPLAY | TEXT_DISPLAY}. This will be removed in 1.13.0. */
+    TEXT               = 10,
+    TEXT_DISPLAY       = 10,
+    THUMBNAIL          = 11,
+    MEDIA_GALLERY      = 12,
+    FILE               = 13,
+    SEPARATOR          = 14,
 
     CONTENT_INVENTORY_ENTRY = 16,
+    CONTAINER               = 17,
 }
 
 export type SelectMenuNonResolvedTypes = ComponentTypes.STRING_SELECT;
@@ -848,7 +851,9 @@ export enum MessageFlags {
     SUPPRESS_NOTIFICATIONS                 = 1 << 12,
     IS_VOICE_MESSAGE                       = 1 << 13,
     HAS_SNAPSHOT                           = 1 << 14,
+    /** @deprecated Use {@link MessageFlags.IS_COMPONENTS_V2 | IS_COMPONENTS_V2}. This will be removed in 1.13.0. */
     IS_UIKIT_COMPONENTS                    = 1 << 15,
+    IS_COMPONENTS_V2                       = 1 << 15,
 }
 
 export enum MessageTypes {
@@ -1536,6 +1541,11 @@ export enum EmbedFlags {
 
 export enum EmbedMediaFlags {
     IS_ANIMATED = 1 << 5,
+}
+
+export enum SeparatorSpacingSize {
+    SMALL = 1,
+    LARGE = 2,
 }
 
 // entries are intentionally not aligned

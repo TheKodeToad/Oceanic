@@ -40,7 +40,8 @@ import type {
     ImplementedChannelTypes,
     ThreadOnlyChannelTypes,
     ReactionType,
-    PollLayoutType
+    PollLayoutType,
+    SeparatorSpacingSize
 } from "../Constants";
 import type Member from "../structures/Member";
 import type AnnouncementChannel from "../structures/AnnouncementChannel";
@@ -298,7 +299,7 @@ export interface CreateMessageOptions {
     /** An array of [partial attachments](https://discord.com/developers/docs/resources/channel#attachment-object) related to the sent files. */
     attachments?: Array<MessageAttachment>;
     /** An array of [components](https://discord.com/developers/docs/interactions/message-components) to send. `snake_case` keys should be converted to `camelCase`, or passed through {@link Util.rawMessageComponents | Util#rawMessageComponents}. */
-    components?: Array<MessageActionRow>;
+    components?: Array<MessageComponent>;
     /** The content of the message. */
     content?: string;
     /** An array of [embeds](https://discord.com/developers/docs/resources/channel#embed-object) to send. `snake_case` keys should be converted to `camelCase`, or passed through {@link Util.rawEmbeds | Util#rawEmbeds}. */
@@ -495,176 +496,6 @@ export interface MessageReference {
     messageID?: string;
 }
 
-export type RawComponent = RawMessageComponent | RawModalComponent;
-export type RawMessageComponent = RawButtonComponent | RawSelectMenuComponent;
-export type RawModalComponent = RawTextInput;
-export type RawButtonComponent = RawTextButton | URLButton | RawPremiumButton;
-export type RawSelectMenuComponent = RawStringSelectMenu | RawUserSelectMenu | RawRoleSelectMenu | RawMentionableSelectMenu | RawChannelSelectMenu;
-export type ToComponentFromRaw<T extends RawComponent> =
-    T extends RawTextButton ? TextButton :
-        T extends URLButton ? URLButton :
-            T extends RawStringSelectMenu ? StringSelectMenu :
-                T extends RawUserSelectMenu ? UserSelectMenu :
-                    T extends RawRoleSelectMenu ? RoleSelectMenu :
-                        T extends RawMentionableSelectMenu ? MentionableSelectMenu :
-                            T extends RawChannelSelectMenu ? ChannelSelectMenu :
-                                T extends RawTextInput ? TextInput :
-                                    never;
-export type ToRawFromComponent<T extends Component> =
-    T extends TextButton ? RawTextButton :
-        T extends URLButton ? URLButton :
-            T extends StringSelectMenu ? RawStringSelectMenu :
-                T extends UserSelectMenu ? RawUserSelectMenu :
-                    T extends RoleSelectMenu ? RawRoleSelectMenu :
-                        T extends MentionableSelectMenu ? RawMentionableSelectMenu :
-                            T extends ChannelSelectMenu ? RawChannelSelectMenu :
-                                T extends TextInput ? RawTextInput :
-                                    never;
-export interface RawActionRowBase<T extends RawComponent> {
-    components: Array<T>;
-    type: ComponentTypes.ACTION_ROW;
-}
-
-export interface RawMessageActionRow extends RawActionRowBase<RawMessageComponent> {}
-export interface RawModalActionRow extends RawActionRowBase<RawModalComponent> {}
-export type ActionRowToRaw<T extends MessageActionRow | ModalActionRow> =
-T extends MessageActionRow ? RawMessageActionRow :
-    T extends ModalActionRow ? RawModalActionRow : never;
-
-export type Component = MessageComponent | ModalComponent;
-export type MessageComponent = ButtonComponent | SelectMenuComponent;
-export type ModalComponent = TextInput;
-export type ButtonComponent = TextButton | URLButton | PremiumButton;
-export type SelectMenuComponent = StringSelectMenu | UserSelectMenu | RoleSelectMenu | MentionableSelectMenu | ChannelSelectMenu;
-
-export interface ActionRowBase<T extends Component> {
-    components: Array<T>;
-    type: ComponentTypes.ACTION_ROW;
-}
-
-export interface MessageActionRow extends ActionRowBase<MessageComponent> {}
-export interface ModalActionRow extends ActionRowBase<ModalComponent> {}
-
-export interface ButtonBase {
-    disabled?: boolean;
-    emoji?: NullablePartialEmoji;
-    label?: string;
-    style: ButtonStyles;
-    type: ComponentTypes.BUTTON;
-}
-
-export interface RawTextButton extends ButtonBase {
-    custom_id: string;
-    style: ButtonStyles.PRIMARY | ButtonStyles.SECONDARY | ButtonStyles.SUCCESS | ButtonStyles.DANGER;
-}
-
-export interface TextButton extends ButtonBase {
-    customID: string;
-    style: ButtonStyles.PRIMARY | ButtonStyles.SECONDARY | ButtonStyles.SUCCESS | ButtonStyles.DANGER;
-}
-
-export interface URLButton extends ButtonBase {
-    style: ButtonStyles.LINK;
-    url: string;
-}
-
-export interface RawPremiumButton extends Omit<ButtonBase, "label" | "emoji"> {
-    sku_id: string;
-    style: ButtonStyles.PREMIUM;
-}
-
-export interface PremiumButton extends Omit<ButtonBase, "label" | "emoji"> {
-    skuID: string;
-    style: ButtonStyles.PREMIUM;
-}
-
-export interface RawSelectMenuBase<T extends SelectMenuTypes> {
-    custom_id: string;
-    disabled?: boolean;
-    max_values?: number;
-    min_values?: number;
-    placeholder?: string;
-    type: T;
-}
-
-export interface RawStringSelectMenuOptions {
-    options: Array<SelectOption>;
-}
-
-export interface RawChannelSelectMenuOptions {
-    channel_types: Array<ChannelTypes>;
-}
-
-export interface RawStringSelectMenu extends RawSelectMenuBase<ComponentTypes.STRING_SELECT>, RawStringSelectMenuOptions {}
-export interface RawUserSelectMenu extends RawSelectMenuBase<ComponentTypes.USER_SELECT>, DefaultValuesRaw {}
-export interface RawRoleSelectMenu extends RawSelectMenuBase<ComponentTypes.ROLE_SELECT>, DefaultValuesRaw {}
-export interface RawMentionableSelectMenu extends RawSelectMenuBase<ComponentTypes.MENTIONABLE_SELECT>, DefaultValuesRaw {}
-export interface RawChannelSelectMenu extends RawSelectMenuBase<ComponentTypes.CHANNEL_SELECT>, RawChannelSelectMenuOptions, DefaultValuesRaw {}
-
-
-export interface SelectMenuBase<T extends SelectMenuTypes> {
-    customID: string;
-    disabled?: boolean;
-    maxValues?: number;
-    minValues?: number;
-    placeholder?: string;
-    type: T;
-}
-
-interface DefaultValuesRaw {
-    default_values?: Array<SelectMenuDefaultValue>;
-}
-
-interface DefaultValues {
-    defaultValues?: Array<SelectMenuDefaultValue>;
-}
-
-export interface StringSelectMenuOptions {
-    options: Array<SelectOption>;
-}
-
-export interface ChannelSelectMenuOptions {
-    channelTypes: Array<ChannelTypes>;
-}
-
-export interface StringSelectMenu extends SelectMenuBase<ComponentTypes.STRING_SELECT>, StringSelectMenuOptions {}
-export interface UserSelectMenu extends SelectMenuBase<ComponentTypes.USER_SELECT>, DefaultValues {}
-export interface RoleSelectMenu extends SelectMenuBase<ComponentTypes.ROLE_SELECT>, DefaultValues {}
-export interface MentionableSelectMenu extends SelectMenuBase<ComponentTypes.MENTIONABLE_SELECT>, DefaultValues {}
-export interface ChannelSelectMenu extends SelectMenuBase<ComponentTypes.CHANNEL_SELECT>, ChannelSelectMenuOptions, DefaultValues {}
-
-export interface SelectOption {
-    default?: boolean;
-    description?: string;
-    emoji?: NullablePartialEmoji;
-    label: string;
-    value: string;
-}
-
-export interface RawTextInput {
-    custom_id: string;
-    label: string;
-    max_length?: number;
-    min_length?: number;
-    placeholder?: string;
-    required?: boolean;
-    style: TextInputStyles;
-    type: ComponentTypes.TEXT_INPUT;
-    value?: string;
-}
-
-export interface TextInput {
-    customID: string;
-    label: string;
-    maxLength?: number;
-    minLength?: number;
-    placeholder?: string;
-    required?: boolean;
-    style: TextInputStyles;
-    type: ComponentTypes.TEXT_INPUT;
-    value?: string;
-}
-
 export interface RawAttachment {
     application?: RESTApplication;
     clip_created_at?: string;
@@ -705,7 +536,7 @@ export interface RawMessage {
     author: RawUser; // this can be an invalid user if `webhook_id` is set
     call?: RawCall;
     channel_id: string;
-    components?: Array<RawMessageActionRow>;
+    components?: Array<RawMessageComponent>;
     content: string;
     edited_timestamp: string | null;
     embeds: Array<RawEmbed>;
@@ -1370,4 +1201,280 @@ export interface MessagePollResults {
     victorAnswerID?: number;
     victorAnswerText?: string;
     victorAnswerVotes: number;
+}
+
+export interface RawTextDisplayComponent extends Omit<TextDisplayComponent, "id"> {}
+export interface RawThumbnailComponent extends Omit<ThumbnailComponent, "id"> {}
+export interface RawMediaGalleryComponent extends Omit<MediaGalleryComponent, "id"> {}
+export interface RawSeparatorComponent extends Omit<SeparatorComponent, "id"> {}
+export interface RawFileComponent extends Omit<FileComponent, "id"> {}
+
+export interface RawSectionComponent extends BaseComponent {
+    accessory: RawThumbnailComponent | RawButtonComponent;
+    components: Array<RawTextDisplayComponent>;
+    type: ComponentTypes.SECTION;
+}
+
+export type RawComponent = AnyRawMessageComponent | AnyRawModalComponent;
+export type AnyRawMessageComponent = RawMessageComponent | RawMessageActionRowComponent | RawThumbnailComponent;
+export type AnyRawModalComponent = RawModalComponent | RawModalActionRowComponent;
+export type RawMessageActionRowComponent = RawButtonComponent | RawSelectMenuComponent;
+export type RawMessageComponent = RawMessageActionRow | RawSectionComponent | RawTextDisplayComponent | RawMediaGalleryComponent | RawSeparatorComponent | RawFileComponent | RawContainerComponent;
+export type RawModalActionRowComponent = RawTextInput;
+export type RawModalComponent = RawModalActionRow;
+export type RawButtonComponent = RawTextButton | URLButton | RawPremiumButton;
+export type RawSelectMenuComponent = RawStringSelectMenu | RawUserSelectMenu | RawRoleSelectMenu | RawMentionableSelectMenu | RawChannelSelectMenu;
+
+export type ToComponentFromRaw<T extends RawComponent> =
+    T extends RawMessageActionRow ? MessageActionRow :
+        T extends RawModalActionRow ? ModalActionRow :
+            T extends RawTextButton ? TextButton :
+                T extends URLButton ? URLButton :
+                    T extends RawStringSelectMenu ? StringSelectMenu :
+                        T extends RawUserSelectMenu ? UserSelectMenu :
+                            T extends RawRoleSelectMenu ? RoleSelectMenu :
+                                T extends RawMentionableSelectMenu ? MentionableSelectMenu :
+                                    T extends RawChannelSelectMenu ? ChannelSelectMenu :
+                                        T extends RawTextInput ? TextInput :
+                                            T extends RawSectionComponent ? SectionComponent :
+                                                T extends RawTextDisplayComponent ? TextDisplayComponent :
+                                                    T extends RawThumbnailComponent ? ThumbnailComponent :
+                                                        T extends RawMediaGalleryComponent ? MediaGalleryComponent :
+                                                            T extends RawSeparatorComponent ? SeparatorComponent :
+                                                                T extends RawFileComponent ? FileComponent :
+                                                                    T extends RawContainerComponent ? ContainerComponent :
+                                                                        never;
+export type ToRawFromComponent<T extends Component> =
+    T extends MessageActionRow ? RawMessageActionRow :
+        T extends ModalActionRow ? RawModalActionRow :
+            T extends TextButton ? RawTextButton :
+                T extends URLButton ? URLButton :
+                    T extends StringSelectMenu ? RawStringSelectMenu :
+                        T extends UserSelectMenu ? RawUserSelectMenu :
+                            T extends RoleSelectMenu ? RawRoleSelectMenu :
+                                T extends MentionableSelectMenu ? RawMentionableSelectMenu :
+                                    T extends ChannelSelectMenu ? RawChannelSelectMenu :
+                                        T extends TextInput ? RawTextInput :
+                                            T extends SectionComponent ? RawSectionComponent :
+                                                T extends TextDisplayComponent ? RawTextDisplayComponent :
+                                                    T extends ThumbnailComponent ? RawThumbnailComponent :
+                                                        T extends MediaGalleryComponent ? RawMediaGalleryComponent :
+                                                            T extends SeparatorComponent ? RawSeparatorComponent :
+                                                                T extends FileComponent ? RawFileComponent :
+                                                                    T extends ContainerComponent ? RawContainerComponent :
+                                                                        never;
+
+export interface RawActionRowBase<T extends RawComponent> {
+    components: Array<T>;
+    type: ComponentTypes.ACTION_ROW;
+}
+
+export interface RawMessageActionRow extends RawActionRowBase<RawMessageActionRowComponent> {}
+export interface RawModalActionRow extends RawActionRowBase<RawModalActionRowComponent> {}
+export type ActionRowToRaw<T extends MessageActionRow | ModalActionRow> =
+    T extends MessageActionRow ? RawMessageActionRow :
+        T extends ModalActionRow ? RawModalActionRow : never;
+
+export type Component = AnyMessageComponent | AnyModalComponent;
+export type AnyMessageComponent = MessageComponent | MessageActionRowComponent | ThumbnailComponent;
+export type AnyModalComponent = ModalComponent | ModalActionRowComponent;
+export type MessageActionRowComponent = ButtonComponent | SelectMenuComponent;
+export type MessageComponent = MessageActionRow | SectionComponent | TextDisplayComponent | MediaGalleryComponent | SeparatorComponent | FileComponent | ContainerComponent;
+export type ModalActionRowComponent = TextInput;
+export type ModalComponent = ModalActionRow;
+export type ButtonComponent = TextButton | URLButton | PremiumButton;
+export type SelectMenuComponent = StringSelectMenu | UserSelectMenu | RoleSelectMenu | MentionableSelectMenu | ChannelSelectMenu;
+
+export interface BaseComponent {
+    /** Autoincremented number if not provided */
+    id?: number;
+    type: ComponentTypes;
+}
+
+export interface ActionRowBase<T extends Component> extends BaseComponent {
+    components: Array<T>;
+    type: ComponentTypes.ACTION_ROW;
+}
+
+export interface MessageActionRow extends ActionRowBase<MessageActionRowComponent> {}
+export interface ModalActionRow extends ActionRowBase<ModalActionRowComponent> {}
+
+export interface ButtonBase extends BaseComponent {
+    disabled?: boolean;
+    emoji?: NullablePartialEmoji;
+    label?: string;
+    style: ButtonStyles;
+    type: ComponentTypes.BUTTON;
+}
+
+export interface RawTextButton extends ButtonBase {
+    custom_id: string;
+    style: ButtonStyles.PRIMARY | ButtonStyles.SECONDARY | ButtonStyles.SUCCESS | ButtonStyles.DANGER;
+}
+
+export interface TextButton extends ButtonBase {
+    customID: string;
+    style: ButtonStyles.PRIMARY | ButtonStyles.SECONDARY | ButtonStyles.SUCCESS | ButtonStyles.DANGER;
+}
+
+export interface URLButton extends ButtonBase {
+    style: ButtonStyles.LINK;
+    url: string;
+}
+
+export interface RawPremiumButton extends Omit<ButtonBase, "label" | "emoji"> {
+    sku_id: string;
+    style: ButtonStyles.PREMIUM;
+}
+
+export interface PremiumButton extends Omit<ButtonBase, "label" | "emoji"> {
+    skuID: string;
+    style: ButtonStyles.PREMIUM;
+}
+
+export interface RawSelectMenuBase<T extends SelectMenuTypes> {
+    custom_id: string;
+    disabled?: boolean;
+    max_values?: number;
+    min_values?: number;
+    placeholder?: string;
+    type: T;
+}
+
+export interface RawStringSelectMenuOptions {
+    options: Array<SelectOption>;
+}
+
+export interface RawChannelSelectMenuOptions {
+    channel_types: Array<ChannelTypes>;
+}
+
+export interface RawStringSelectMenu extends RawSelectMenuBase<ComponentTypes.STRING_SELECT>, RawStringSelectMenuOptions {}
+export interface RawUserSelectMenu extends RawSelectMenuBase<ComponentTypes.USER_SELECT>, DefaultValuesRaw {}
+export interface RawRoleSelectMenu extends RawSelectMenuBase<ComponentTypes.ROLE_SELECT>, DefaultValuesRaw {}
+export interface RawMentionableSelectMenu extends RawSelectMenuBase<ComponentTypes.MENTIONABLE_SELECT>, DefaultValuesRaw {}
+export interface RawChannelSelectMenu extends RawSelectMenuBase<ComponentTypes.CHANNEL_SELECT>, RawChannelSelectMenuOptions, DefaultValuesRaw {}
+
+
+export interface SelectMenuBase<T extends SelectMenuTypes> extends BaseComponent {
+    customID: string;
+    disabled?: boolean;
+    maxValues?: number;
+    minValues?: number;
+    placeholder?: string;
+    type: T;
+}
+
+interface DefaultValuesRaw {
+    default_values?: Array<SelectMenuDefaultValue>;
+}
+
+interface DefaultValues {
+    defaultValues?: Array<SelectMenuDefaultValue>;
+}
+
+export interface StringSelectMenuOptions {
+    options: Array<SelectOption>;
+}
+
+export interface ChannelSelectMenuOptions {
+    channelTypes: Array<ChannelTypes>;
+}
+
+export interface StringSelectMenu extends SelectMenuBase<ComponentTypes.STRING_SELECT>, StringSelectMenuOptions {}
+export interface UserSelectMenu extends SelectMenuBase<ComponentTypes.USER_SELECT>, DefaultValues {}
+export interface RoleSelectMenu extends SelectMenuBase<ComponentTypes.ROLE_SELECT>, DefaultValues {}
+export interface MentionableSelectMenu extends SelectMenuBase<ComponentTypes.MENTIONABLE_SELECT>, DefaultValues {}
+export interface ChannelSelectMenu extends SelectMenuBase<ComponentTypes.CHANNEL_SELECT>, ChannelSelectMenuOptions, DefaultValues {}
+
+export interface SelectOption {
+    default?: boolean;
+    description?: string;
+    emoji?: NullablePartialEmoji;
+    label: string;
+    value: string;
+}
+
+export interface RawTextInput {
+    custom_id: string;
+    label: string;
+    max_length?: number;
+    min_length?: number;
+    placeholder?: string;
+    required?: boolean;
+    style: TextInputStyles;
+    type: ComponentTypes.TEXT_INPUT;
+    value?: string;
+}
+
+export interface TextInput extends BaseComponent {
+    customID: string;
+    label: string;
+    maxLength?: number;
+    minLength?: number;
+    placeholder?: string;
+    required?: boolean;
+    style: TextInputStyles;
+    type: ComponentTypes.TEXT_INPUT;
+    value?: string;
+}
+
+export interface UnfurledMediaItem {
+    url: string;
+}
+
+export interface SectionComponent extends BaseComponent {
+    accessory: ThumbnailComponent | ButtonComponent;
+    components: Array<TextDisplayComponent>;
+    type: ComponentTypes.SECTION;
+}
+
+export interface TextDisplayComponent extends BaseComponent {
+    content: string;
+    type: ComponentTypes.TEXT_DISPLAY;
+}
+
+export interface ThumbnailComponent extends BaseComponent {
+    description?: string;
+    media: UnfurledMediaItem;
+    spoiler?: boolean;
+    type: ComponentTypes.THUMBNAIL;
+}
+
+export interface MediaGalleryItem {
+    description?: string;
+    media: UnfurledMediaItem;
+    spoiler?: boolean;
+}
+
+export interface MediaGalleryComponent extends BaseComponent {
+    items: Array<MediaGalleryItem>;
+    type: ComponentTypes.MEDIA_GALLERY;
+}
+
+export interface SeparatorComponent extends BaseComponent {
+    divider?: boolean;
+    spacing?: SeparatorSpacingSize;
+    type: ComponentTypes.SEPARATOR;
+}
+
+export interface FileComponent extends BaseComponent {
+    // The UnfurledMediaItem ONLY supports attachment://<filename> references
+    file: UnfurledMediaItem;
+    spoiler?: boolean;
+    type: ComponentTypes.FILE;
+}
+
+export interface ContainerComponent extends BaseComponent {
+    accentColor?: number;
+    components: Array<MessageActionRow | TextDisplayComponent | SectionComponent | MediaGalleryComponent | SeparatorComponent | FileComponent>;
+    spoiler?: boolean;
+    type: ComponentTypes.CONTAINER;
+}
+
+export interface RawContainerComponent extends Omit<BaseComponent, "id"> {
+    accent_color?: number;
+    components: Array<RawMessageActionRow | RawTextDisplayComponent | RawSectionComponent | RawMediaGalleryComponent | RawSeparatorComponent | RawFileComponent>;
+    spoiler?: boolean;
+    type: ComponentTypes.CONTAINER;
 }

@@ -13,7 +13,6 @@ import { InteractionResponseTypes, type InteractionTypes, type InteractionContex
 import type {
     AuthorizingIntegrationOwners,
     EditInteractionContent,
-    InitialInteractionContent,
     InteractionCallbackResponse,
     InteractionContent,
     InteractionGuild,
@@ -130,7 +129,7 @@ export default class ModalSubmitInteraction<T extends AnyInteractionChannel | Un
      * Note that the returned class is not a message. It is a wrapper around the interaction response. The {@link MessageInteractionResponse#getMessage | getMessage} function can be used to get the message.
      * @param options The options for the message.
      */
-    async createMessage(options: InitialInteractionContent): Promise<InitialMessagedInteractionResponse<this>> {
+    async createMessage(options: InteractionContent): Promise<InitialMessagedInteractionResponse<this>> {
         if (this.acknowledged) {
             throw new TypeError("Interactions cannot have more than one initial response.");
         }

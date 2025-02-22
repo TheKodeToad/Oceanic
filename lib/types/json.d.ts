@@ -33,7 +33,6 @@ import type {
     PrivateThreadMetadata,
     ForumTag,
     ForumEmoji,
-    MessageActionRow,
     Embed,
     GuildChannels,
     TextableGuildChannels,
@@ -43,7 +42,8 @@ import type {
     PollQuestion,
     PollResults,
     PollAnswer,
-    MessagePollResults
+    MessagePollResults,
+    MessageComponent
 } from "./channels";
 import type { ScheduledEventEntityMetadata } from "./scheduled-events";
 import type { AvatarDecorationData } from "./users";
@@ -464,7 +464,7 @@ export interface JSONMessage extends JSONBase {
     attachments: Array<JSONAttachment>;
     author: JSONUser;
     channelID: string;
-    components?: Array<MessageActionRow>;
+    components?: Array<MessageComponent>;
     content: string;
     editedTimestamp: number | null;
     embeds: Array<Embed>;

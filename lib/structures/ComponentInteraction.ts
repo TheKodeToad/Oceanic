@@ -15,7 +15,6 @@ import type Client from "../Client";
 import type {
     AuthorizingIntegrationOwners,
     EditInteractionContent,
-    InitialInteractionContent,
     InteractionCallbackResponse,
     InteractionContent,
     InteractionGuild,
@@ -188,12 +187,9 @@ export default class ComponentInteraction<V extends ComponentTypes.BUTTON | Sele
      * Note that the returned class is not a message. It is a wrapper around the interaction response. The {@link MessageInteractionResponse#getMessage | getMessage} function can be used to get the message.
      * @param options The options for the message.
      */
-    async createMessage(options: InitialInteractionContent): Promise<InitialMessagedInteractionResponse<this>> {
+    async createMessage(options: InteractionContent): Promise<InitialMessagedInteractionResponse<this>> {
         if (this.acknowledged) {
             throw new TypeError("Interactions cannot have more than one initial response.");
-        }
-        if ("files" in options && (options.files as []).length !== 0) {
-            this.client.emit("warn", "You cannot attach files in an initial response. Defer the interaction, then use createFollowup.");
         }
         this.acknowledged = true;
         const cb = await this.client.rest.interactions.createInteractionResponse(this.id, this.token, { type: InteractionResponseTypes.CHANNEL_MESSAGE_WITH_SOURCE, data: options }, true);
