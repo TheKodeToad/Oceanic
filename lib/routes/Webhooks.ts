@@ -199,6 +199,9 @@ export default class Webhooks {
         if (options.wait !== undefined) {
             query.set("wait", options.wait.toString());
         }
+        if (options.withComponents !== undefined) {
+            query.set("with_components", options.withComponents.toString());
+        }
         if (options.threadID !== undefined) {
             query.set("thread_id", options.threadID);
         }

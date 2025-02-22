@@ -58,6 +58,7 @@ export interface ExecuteWebhookOptions extends Pick<CreateMessageOptions, "conte
     username?: string;
     /** If the created message should be returned. */
     wait?: boolean;
+    withComponents?: boolean;
 }
 export interface ExecuteWebhookWaitOptions extends Omit<ExecuteWebhookOptions, "wait"> { wait: true; }
 
